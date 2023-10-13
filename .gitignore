@@ -1,0 +1,9 @@
+# macbook
+*.DS_Store
+
+# vendor
+*vendor/
+
+# vscode
+*.vscode
+**__debug_bin
