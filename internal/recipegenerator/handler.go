@@ -2,6 +2,7 @@ package recipegenerator
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -40,11 +41,10 @@ func (h Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to build recipe", http.StatusInternalServerError)
 	}
 
-	// Send the response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(recipe)
 	if err != nil {
-		http.Error(w, "failed to encode recipe response", http.StatusInternalServerError)
+		http.Error(w, fmt.Errorf("failed to encode recipe response: %v", err).Error(), http.StatusInternalServerError)
 	}
 }

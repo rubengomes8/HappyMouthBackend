@@ -22,8 +22,3 @@ dynamo-up:
 dynamo-down:
 	./docker/dynamodb/clean.sh
 
-dynamo-create-table-recipes:
-	aws dynamodb create-table --table-name GeneratedRecipes --endpoint-url http://localhost:8000 \
-	--attribute-definitions AttributeName=PrimaryKey,AttributeType=S \
-  	--key-schema AttributeName=PrimaryKey,KeyType=HASH \
-  	--provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5

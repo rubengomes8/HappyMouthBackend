@@ -1,9 +1,14 @@
 package ingredients
 
-import "net/http"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type service interface {
+	GetIngredients() ([]Ingredient, error)
 }
 
 type Handler struct {
@@ -16,4 +21,18 @@ func NewHandler(svc service) Handler {
 	}
 }
 
-func (h Handler) GetIngredients(w http.ResponseWriter, r *http.Request) {}
+func (h Handler) GetIngredients(w http.ResponseWriter, r *http.Request) {
+
+	ingredients, err := h.svc.GetIngredients()
+	if err != nil {
+		http.Error(w, fmt.Errorf("failed to build recipe: %v", err).Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	err = json.NewEncoder(w).Encode(ingredients)
+	if err != nil {
+		http.Error(w, fmt.Errorf("failed to encode recipe response: %v", err).Error(), http.StatusInternalServerError)
+	}
+}
