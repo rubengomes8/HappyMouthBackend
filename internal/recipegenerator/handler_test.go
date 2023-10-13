@@ -1,4 +1,4 @@
-package recipe_test
+package recipegenerator_test
 
 import (
 	"bytes"
@@ -9,15 +9,15 @@ import (
 	"testing"
 
 	"github.com/gofrs/uuid"
-	"github.com/rubengomes8/HappyMouthBackend/internal/recipe"
-	"github.com/rubengomes8/HappyMouthBackend/internal/recipe/mocks"
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestHandler_CreateRecipe(t *testing.T) {
 
 	mockSvc := mocks.NewMockService()
-	handler := recipe.NewHandler(mockSvc)
+	handler := recipegenerator.NewHandler(mockSvc)
 
 	tt := map[string]struct {
 		setup      func() *http.Request
@@ -27,7 +27,7 @@ func TestHandler_CreateRecipe(t *testing.T) {
 		"no include ingredients": {
 			setup: func() *http.Request {
 
-				recipe := recipe.RecipeDefinitions{
+				recipe := recipegenerator.RecipeDefinitions{
 					IncludeIngredients: []string{},
 					ExcludeIngredients: []string{"Tomato"},
 				}
@@ -49,13 +49,13 @@ func TestHandler_CreateRecipe(t *testing.T) {
 			},
 			validation: func(rr *httptest.ResponseRecorder) {
 				assert.Equal(t, http.StatusBadRequest, rr.Code)
-				assert.Equal(t, recipe.ErrRequiredIncludeIngredients.Error(), strings.ReplaceAll(rr.Body.String(), "\n", ""))
+				assert.Equal(t, recipegenerator.ErrRequiredIncludeIngredients.Error(), strings.ReplaceAll(rr.Body.String(), "\n", ""))
 			},
 		},
 		"conflicting include and exclude ingredients": {
 			setup: func() *http.Request {
 
-				recipe := recipe.RecipeDefinitions{
+				recipe := recipegenerator.RecipeDefinitions{
 					IncludeIngredients: []string{"Apple", "Tomato"},
 					ExcludeIngredients: []string{"Tomato"},
 				}
@@ -77,12 +77,12 @@ func TestHandler_CreateRecipe(t *testing.T) {
 			},
 			validation: func(rr *httptest.ResponseRecorder) {
 				assert.Equal(t, http.StatusBadRequest, rr.Code)
-				assert.Equal(t, recipe.ErrConflictingIngredients.Error(), strings.ReplaceAll(rr.Body.String(), "\n", ""))
+				assert.Equal(t, recipegenerator.ErrConflictingIngredients.Error(), strings.ReplaceAll(rr.Body.String(), "\n", ""))
 			},
 		},
 		"success": {
 			setup: func() *http.Request {
-				rec := recipe.RecipeDefinitions{
+				rec := recipegenerator.RecipeDefinitions{
 					IncludeIngredients: []string{"Apple"},
 					ExcludeIngredients: []string{"Tomato"},
 				}
@@ -96,7 +96,7 @@ func TestHandler_CreateRecipe(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				mockSvc.AskRecipeFunc.PushReturn(recipe.Recipe{
+				mockSvc.AskRecipeFunc.PushReturn(recipegenerator.Recipe{
 					ID: func() uuid.UUID {
 						id, _ := uuid.FromString("A21040C9-017C-4A34-8449-F5FE26098B93")
 						return id
@@ -111,12 +111,12 @@ func TestHandler_CreateRecipe(t *testing.T) {
 			},
 			validation: func(rr *httptest.ResponseRecorder) {
 				assert.Equal(t, http.StatusOK, rr.Code)
-				var got recipe.Recipe
+				var got recipegenerator.Recipe
 				err := json.Unmarshal(rr.Body.Bytes(), &got)
 				if err != nil {
 					t.Fatal(err)
 				}
-				expected := recipe.Recipe{
+				expected := recipegenerator.Recipe{
 					ID: func() uuid.UUID {
 						id, _ := uuid.FromString("A21040C9-017C-4A34-8449-F5FE26098B93")
 						return id

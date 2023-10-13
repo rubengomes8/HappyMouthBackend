@@ -12,5 +12,5 @@ docker-down: ## Stop docker containers and clear artefacts.
 	docker system prune
 
 # GENERATE MOCKS #
-mock-recipe-service:
-	go-mockgen -f ./internal/recipe/ -i service -d ./internal/recipe/mocks/
+mock-recipegenerator-service:
+	go-mockgen -f ./internal/recipegenerator/ -i service -d ./internal/recipegenerator/mocks/

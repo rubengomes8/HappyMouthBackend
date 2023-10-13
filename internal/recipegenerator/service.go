@@ -1,4 +1,4 @@
-package recipe
+package recipegenerator
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/gofrs/uuid"
 
-	"github.com/rubengomes8/HappyMouthBackend/internal/recipe/examples"
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator/examples"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
 )
 

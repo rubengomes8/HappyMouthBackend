@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/IBM/sarama"
-	"github.com/rubengomes8/HappyMouthBackend/internal/recipe"
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
 )
 
 const (
@@ -23,7 +23,7 @@ func main() {
 	}
 	defer producer.Close()
 
-	recipeRouter, err := recipe.NewAPI(producer)
+	recipeRouter := recipegenerator.NewAPI(producer)
 	if err != nil {
 		log.Fatal(err)
 	}

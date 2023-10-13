@@ -1,4 +1,4 @@
-package recipe
+package recipegenerator
 
 import (
 	"net/http"
@@ -21,15 +21,14 @@ type API struct {
 	handler handler
 }
 
-func NewAPI(producer sarama.SyncProducer) (*mux.Router, error) {
+func NewAPI(producer sarama.SyncProducer) *mux.Router {
 
 	svc := NewService(openAIEndpoint, openAIKey, producer)
 	h := NewHandler(svc)
 	api := API{
 		handler: h,
 	}
-	router := api.SetRoutes()
-	return router, nil
+	return api.SetRoutes()
 }
 
 func (a API) SetRoutes() *mux.Router {
