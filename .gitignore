@@ -7,3 +7,6 @@
 # vscode
 *.vscode
 **__debug_bin
+
+# dynamodb
+docker/dynamodb/shared-local-instance.db
