@@ -25,7 +25,7 @@ const (
 var (
 	includeTemplate      = "Give me a simple recipe that includes the following ingredients: %s."
 	excludeTemplate      = "Also, the recipe cannot have the following ingredients: %s."
-	instructionsTemplate = "I would like to have only 4 sections in your answer (name, ingredients, instructions and calories per serving)"
+	instructionsTemplate = "I would like to have only 4 sections separated by the pipe character |. Something like the following: name: x | ingredients: y | instructions: w | calories per serving: z. Also, split the list of ingredients by semicolon character ;"
 )
 
 type Service struct {
