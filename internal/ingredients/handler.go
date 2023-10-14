@@ -9,7 +9,7 @@ import (
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type service interface {
-	GetIngredients(ctx context.Context) ([]Ingredient, error)
+	GetIngredients(ctx context.Context, reqOptions ReqOptions) ([]Ingredient, error)
 }
 
 type Handler struct {
@@ -24,7 +24,16 @@ func NewHandler(svc service) Handler {
 
 func (h Handler) GetIngredients(w http.ResponseWriter, r *http.Request) {
 
-	ingredients, err := h.svc.GetIngredients(r.Context())
+	sortByName, err := GetBoolQueryParamWithDefault(r, "sort-by-name", false)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	options := ReqOptions{
+		SortByName: sortByName,
+	}
+
+	ingredients, err := h.svc.GetIngredients(r.Context(), options)
 	if err != nil {
 		http.Error(w, fmt.Errorf("failed to build recipe: %v", err).Error(), http.StatusInternalServerError)
 	}

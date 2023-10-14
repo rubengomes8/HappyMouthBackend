@@ -2,6 +2,7 @@ package ingredients
 
 import (
 	"context"
+	"sort"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -18,7 +19,7 @@ func NewService(dynamoDBClient *dynamodb.Client) Service {
 	}
 }
 
-func (s Service) GetIngredients(ctx context.Context) ([]Ingredient, error) {
+func (s Service) GetIngredients(ctx context.Context, reqOptions ReqOptions) ([]Ingredient, error) {
 
 	input := &dynamodb.ScanInput{
 		TableName: aws.String("ingredients"),
@@ -40,6 +41,12 @@ func (s Service) GetIngredients(ctx context.Context) ([]Ingredient, error) {
 		}
 
 		ingredients = append(ingredients, ingredient)
+	}
+
+	if reqOptions.SortByName {
+		sort.Slice(ingredients, func(i, j int) bool {
+			return ingredients[i].Name < ingredients[j].Name
+		})
 	}
 
 	return ingredients, nil

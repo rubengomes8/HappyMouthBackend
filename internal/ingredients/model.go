@@ -5,3 +5,7 @@ type Ingredient struct {
 	Name       string `json:"name" dynamodbav:"name"`
 	IsFavorite bool   `json:"is_favorite" dynamodbav:"is_favorite"`
 }
+
+type ReqOptions struct {
+	SortByName bool
+}
