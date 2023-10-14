@@ -22,3 +22,36 @@ aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredie
 
 aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
 	--item file://docker/dynamodb/ingredients/tomato.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/bean.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/broccoli.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/cabbage.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/codfish.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/ground_beef.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/lettuce.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/pasta.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/red_onion.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/rice.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/spinach.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/tuna.json
