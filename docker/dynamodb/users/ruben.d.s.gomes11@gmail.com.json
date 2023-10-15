@@ -1,0 +1,7 @@
+{
+    "email": {"S":  "ruben.d.s.gomes11@gmail.com"},
+    "recipes": {"L": [
+        {"M": {"id": {"S": "meat,oregon,potato|onion"}, "is_favorite": {"BOOL": true}}},
+        {"M": {"id": {"S": "mushroom,tomato|honey,onion"}, "is_favorite": {"BOOL": false}}}
+    ]}
+}

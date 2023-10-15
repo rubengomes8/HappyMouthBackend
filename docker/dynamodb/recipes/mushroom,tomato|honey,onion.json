@@ -1,0 +1,22 @@
+{
+    "id": {"S": "mushroom,tomato|honey,onion"},
+    "title": {"S": "tomato mushroom salad"},
+    "ingredients": {"SS": [
+      "2 tomatoes",
+      "1 cup mushrooms",
+      "1 tablespoon olive oil",
+      "1 tablespoon balsamic vinegar",
+      "salt and pepper to taste"
+    ]},
+    "instructions": {"SS": [
+      "1. slice the tomatoes and mushrooms into bite-sized pieces.",
+      "2. in a mixing bowl, combine the tomatoes and mushrooms.",
+      "3. drizzle olive oil and balsamic vinegar over the mixture.",
+      "4. season with salt and pepper to taste.",
+      "5. gently toss the ingredients in the bowl until well combined.",
+      "6. serve the tomato mushroom salad immediately."
+    ]},
+    "calories": {"N": "75"},
+    "created_at": {"S": "2023-10-09T20:35:15.926306Z"},
+    "updated_at": {"S": "2023-10-09T20:35:15.926306Z"}
+  }

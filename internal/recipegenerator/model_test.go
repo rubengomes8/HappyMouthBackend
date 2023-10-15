@@ -39,3 +39,10 @@ func Test_getRecipeKey(t *testing.T) {
 		})
 	}
 }
+
+func TestGenerateRecipeKey(t *testing.T) {
+	includedIngredients := []string{"mushroom", "tomato"}
+	excludedIngredients := []string{"honey", "onion"}
+	key := getRecipeKey(includedIngredients, excludedIngredients)
+	t.Logf("key: %v", key)
+}
