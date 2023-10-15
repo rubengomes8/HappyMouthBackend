@@ -55,3 +55,21 @@ aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredie
 
 aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
 	--item file://docker/dynamodb/ingredients/tuna.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/almond.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/chicken.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/chocolate.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/egg.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/lamb.json
+
+aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
+	--item file://docker/dynamodb/ingredients/meat_ball.json
