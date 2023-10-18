@@ -1,15 +1,15 @@
 {
-    "id": {"S": "meat,oregon,potato|onion"},
-    "title": {"S":  "delicious steak with french fries"},
-    "is_favorite": {"BOOL": true},
-    "ingredients": {"SS": [
+    "id": "meat,oregon,potato|onion",
+    "title": "delicious steak with french fries",
+    "is_favorite": true,
+    "ingredients": [
       "4 potatoes",
       "2 tablespoons of olive oil",
       "2 cloves of garlic, minced",
       "2 cow steaks",
       "Salt, pepper and oregon"
-    ]},
-    "instructions":  {"SS": [
+    ],
+    "instructions": [
       "Cut the potatoes in sticks.",
       "Deep fry them or fry them using an airfrier.",
       "Heat olive oil in a pan and add the steak,",
@@ -17,8 +17,8 @@
       "Drain the french potatoes.",
       "Mix the french potatoes with oregon, salt and pepper.",
       "Serve the steak with the potatoes and enjoy!"
-    ]},
-    "calories": {"N": "75"},
-    "created_at": {"S": "2023-10-09T20:35:15.926306Z"},
-    "updated_at": {"S": "2023-10-09T20:35:15.926306Z"}
+    ],
+    "calories": 75.2,
+    "created_at": "2023-10-09T20:35:15.926306Z",
+    "updated_at": "2023-10-09T20:35:15.926306Z"
   }
