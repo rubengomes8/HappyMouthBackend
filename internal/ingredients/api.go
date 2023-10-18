@@ -1,13 +1,11 @@
 package ingredients
 
 import (
-	"context"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/gorilla/mux"
+	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 )
 
 type handler interface {
@@ -18,27 +16,9 @@ type API struct {
 	handler handler
 }
 
-func NewAPI() (*mux.Router, error) {
+func NewAPI(cache *redis.Cache, dynDB *dynamodb.Client) (*mux.Router, error) {
 
-	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-		if service == dynamodb.ServiceID && region == "us-east-1" {
-			return aws.Endpoint{
-				PartitionID:   "aws",
-				URL:           "http://localhost:8000",
-				SigningRegion: "us-east-1",
-			}, nil
-		}
-		return aws.Endpoint{}, &aws.EndpointNotFoundError{}
-	})
-
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithEndpointResolverWithOptions(customResolver))
-	if err != nil {
-		return nil, err
-	}
-
-	dynamoDBClient := dynamodb.NewFromConfig(cfg)
-
-	svc := NewService(dynamoDBClient)
+	svc := NewService(cache, dynDB)
 	h := NewHandler(svc)
 	api := API{
 		handler: h,

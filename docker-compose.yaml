@@ -26,7 +26,6 @@ services:
       - AWS_SESSION_TOKEN="123"
       - AWS_DEFAULT_REGION=us-east-1
 
-
   zookeeper:
     container_name: zookeeper
     image: confluentinc/cp-zookeeper:latest
@@ -50,6 +49,14 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1'
       KAFKA_MIN_INSYNC_REPLICAS: '1'
+  
+  redis:
+    image: redis:latest
+    container_name: redis
+    environment:
+      - REDIS_DB=0
+    ports:
+      - "6379:6379"
 
   init-kafka:
     container_name: init-kafka

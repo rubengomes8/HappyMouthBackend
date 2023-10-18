@@ -7,15 +7,18 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 )
 
 type Service struct {
 	DynamoDBClient *dynamodb.Client
+	Cache          *redis.Cache
 }
 
-func NewService(dynamoDBClient *dynamodb.Client) Service {
+func NewService(cache *redis.Cache, dynDB *dynamodb.Client) Service {
 	return Service{
-		DynamoDBClient: dynamoDBClient,
+		DynamoDBClient: dynDB,
+		Cache:          cache,
 	}
 }
 
