@@ -22,6 +22,10 @@ type Recipe struct {
 	DeletedAt    *time.Time        `json:"deleted_at"`
 }
 
+func (r Recipe) HasTitle() bool {
+	return r.Title != ""
+}
+
 type RecipeDefinitions struct {
 	IncludeIngredients []string `json:"include_ingredients"`
 	ExcludeIngredients []string `json:"exclude_ingredients"`

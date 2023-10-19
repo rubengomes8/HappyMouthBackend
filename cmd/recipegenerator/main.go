@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
 	"github.com/IBM/sarama"
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
+	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 )
 
 const (
@@ -14,6 +16,9 @@ const (
 
 func main() {
 
+	ctx := context.Background()
+
+	// KAFKA
 	config := sarama.NewConfig()
 	config.Producer.Return.Successes = true
 
@@ -23,7 +28,14 @@ func main() {
 	}
 	defer producer.Close()
 
-	recipeRouter := recipegenerator.NewAPI(producer)
+	// REDIS
+	cache := redis.NewClient("localhost:6379", 0)
+	if err := cache.Ping(ctx); err != nil {
+		log.Fatal(err)
+	}
+
+	// API
+	recipeRouter := recipegenerator.NewAPI(cache, producer)
 	if err != nil {
 		log.Fatal(err)
 	}

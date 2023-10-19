@@ -5,6 +5,7 @@ import (
 
 	"github.com/IBM/sarama"
 	"github.com/gorilla/mux"
+	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 )
 
 const (
@@ -21,9 +22,9 @@ type API struct {
 	handler handler
 }
 
-func NewAPI(producer sarama.SyncProducer) *mux.Router {
+func NewAPI(cache *redis.Cache, producer sarama.SyncProducer) *mux.Router {
 
-	svc := NewService(openAIEndpoint, openAIKey, producer)
+	svc := NewService(openAIEndpoint, openAIKey, cache, producer)
 	h := NewHandler(svc)
 	api := API{
 		handler: h,

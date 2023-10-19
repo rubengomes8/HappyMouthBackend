@@ -39,11 +39,15 @@ func (c *Cache) Set(ctx context.Context, key string, value interface{}, ttl time
 // var dest Test
 // err := cache.Get(context.Background(), "test", &dest)
 func (c *Cache) Get(ctx context.Context, key string, dest interface{}) error {
-	cmdStr, err := c.Client.Get(ctx, key).Result()
+	cmdValStr, err := c.Client.Get(ctx, key).Result()
 	if err != nil {
+		if err.Error() == "redis: nil" {
+			return ErrNotFound
+		}
 		return err
 	}
-	err = json.Unmarshal([]byte(cmdStr), &dest)
+
+	err = json.Unmarshal([]byte(cmdValStr), &dest)
 	if err != nil {
 		return err
 	}

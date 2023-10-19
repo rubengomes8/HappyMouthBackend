@@ -1,6 +1,7 @@
 package recipegenerator
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type service interface {
-	AskRecipe(RecipeDefinitions) (Recipe, error)
+	AskRecipe(context.Context, RecipeDefinitions) (Recipe, error)
 }
 
 type Handler struct {
@@ -36,9 +37,10 @@ func (h Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recipe, err := h.svc.AskRecipe(recipeRequest)
+	recipe, err := h.svc.AskRecipe(r.Context(), recipeRequest)
 	if err != nil {
 		http.Error(w, "failed to build recipe", http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -46,5 +48,6 @@ func (h Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(recipe)
 	if err != nil {
 		http.Error(w, fmt.Errorf("failed to encode recipe response: %v", err).Error(), http.StatusInternalServerError)
+		return
 	}
 }

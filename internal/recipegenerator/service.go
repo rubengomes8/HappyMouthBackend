@@ -1,6 +1,7 @@
 package recipegenerator
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,12 +14,14 @@ import (
 	"github.com/gofrs/uuid"
 
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator/examples"
+	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
 )
 
 const (
 	gptRecipesTopic = "gpt-recipes"
 	askGPT          = false
+	useKafka        = false
 	sleepTime       = 3
 )
 
@@ -33,26 +36,45 @@ type Service struct {
 	OpenAIAPIKey      string
 	OpenAIClient      *resty.Client
 	Producer          sarama.SyncProducer
+	Cache             *redis.Cache
 }
 
-func NewService(openAIEndpoint, openAIKey string, producer sarama.SyncProducer) Service {
+func NewService(
+	openAIEndpoint,
+	openAIKey string,
+	cache *redis.Cache,
+	producer sarama.SyncProducer,
+) Service {
 	return Service{
 		OpenAIAPIEndpoint: openAIEndpoint,
 		OpenAIAPIKey:      openAIKey,
 		OpenAIClient:      resty.New(),
 		Producer:          producer,
+		Cache:             cache,
 	}
 }
 
-func (s Service) AskRecipe(recipeRequest RecipeDefinitions) (Recipe, error) {
+func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions) (Recipe, error) {
 
-	chatGPTQuestion := createOpenAPIQuestion(
-		utils.ToLowercaseUniqueSorted(recipeRequest.IncludeIngredients),
-		utils.ToLowercaseUniqueSorted(recipeRequest.ExcludeIngredients))
-	fmt.Println(chatGPTQuestion)
+	recipeKey := getRecipeKey(recipeRequest.IncludeIngredients, recipeRequest.ExcludeIngredients)
+
+	var cachedRecipe Recipe
+	err := s.Cache.Get(ctx, recipeKey, &cachedRecipe)
+	if err != nil && err != redis.ErrNotFound {
+		return Recipe{}, err
+	}
+
+	if cachedRecipe.HasTitle() {
+		return cachedRecipe, nil
+	}
 
 	var recipeStr string
 	if askGPT {
+		chatGPTQuestion := createOpenAPIQuestion(
+			utils.ToLowercaseUniqueSorted(recipeRequest.IncludeIngredients),
+			utils.ToLowercaseUniqueSorted(recipeRequest.ExcludeIngredients))
+		fmt.Println(chatGPTQuestion)
+
 		chatGPTResponse, err := s.getRecipeFromOpenAPI(chatGPTQuestion)
 		if err != nil {
 			return Recipe{}, err
@@ -63,9 +85,8 @@ func (s Service) AskRecipe(recipeRequest RecipeDefinitions) (Recipe, error) {
 		var data map[string]interface{}
 		err = json.Unmarshal(body, &data)
 		if err != nil {
-			return Recipe{}, fmt.Errorf("error decoding JSON response: %v", err)
+			return Recipe{}, err
 		}
-		// fmt.Println(data)
 
 		recipeStr, err = getOpenAPIRecipeString(data)
 		if err != nil {
@@ -77,21 +98,23 @@ func (s Service) AskRecipe(recipeRequest RecipeDefinitions) (Recipe, error) {
 		recipeStr = examples.Answer
 	}
 
-	eventKey := getRecipeKey(
-		recipeRequest.IncludeIngredients,
-		recipeRequest.ExcludeIngredients)
-	_, _, err := ProduceRecipeEvent(s.Producer, eventKey, recipeStr, gptRecipesTopic)
-	if err != nil {
-		return Recipe{}, err
+	if useKafka {
+		_, _, err := ProduceRecipeEvent(s.Producer, recipeKey, recipeStr, gptRecipesTopic)
+		if err != nil {
+			return Recipe{}, err
+		}
 	}
 
 	// fmt.Println("content")
 	recipe, err := parseRecipeString(recipeStr)
 	if err != nil {
-		return Recipe{}, errors.New("error parsing recipe string")
+		return Recipe{}, err
 	}
 
-	// TODO: save recipe in cache or NoSQL database
+	err = s.Cache.Set(ctx, recipeKey, recipe, 0 /* ttl */)
+	if err != nil {
+		return Recipe{}, err
+	}
 
 	return recipe, nil
 }

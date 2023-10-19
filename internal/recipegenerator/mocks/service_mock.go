@@ -3,6 +3,7 @@
 package mocks
 
 import (
+	"context"
 	"sync"
 
 	recipegenerator "github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
@@ -23,7 +24,7 @@ type MockService struct {
 func NewMockService() *MockService {
 	return &MockService{
 		AskRecipeFunc: &ServiceAskRecipeFunc{
-			defaultHook: func(recipegenerator.RecipeDefinitions) (r0 recipegenerator.Recipe, r1 error) {
+			defaultHook: func(context.Context, recipegenerator.RecipeDefinitions) (r0 recipegenerator.Recipe, r1 error) {
 				return
 			},
 		},
@@ -35,7 +36,7 @@ func NewMockService() *MockService {
 func NewStrictMockService() *MockService {
 	return &MockService{
 		AskRecipeFunc: &ServiceAskRecipeFunc{
-			defaultHook: func(recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
+			defaultHook: func(context.Context, recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
 				panic("unexpected invocation of MockService.AskRecipe")
 			},
 		},
@@ -46,7 +47,7 @@ func NewStrictMockService() *MockService {
 // github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator). It is
 // redefined here as it is unexported in the source package.
 type surrogateMockService interface {
-	AskRecipe(recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)
+	AskRecipe(context.Context, recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)
 }
 
 // NewMockServiceFrom creates a new mock of the MockService interface. All
@@ -62,23 +63,23 @@ func NewMockServiceFrom(i surrogateMockService) *MockService {
 // ServiceAskRecipeFunc describes the behavior when the AskRecipe method of
 // the parent MockService instance is invoked.
 type ServiceAskRecipeFunc struct {
-	defaultHook func(recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)
-	hooks       []func(recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)
+	defaultHook func(context.Context, recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)
+	hooks       []func(context.Context, recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)
 	history     []ServiceAskRecipeFuncCall
 	mutex       sync.Mutex
 }
 
 // AskRecipe delegates to the next hook function in the queue and stores the
 // parameter and result values of this invocation.
-func (m *MockService) AskRecipe(v0 recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
-	r0, r1 := m.AskRecipeFunc.nextHook()(v0)
-	m.AskRecipeFunc.appendCall(ServiceAskRecipeFuncCall{v0, r0, r1})
+func (m *MockService) AskRecipe(v0 context.Context, v1 recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
+	r0, r1 := m.AskRecipeFunc.nextHook()(v0, v1)
+	m.AskRecipeFunc.appendCall(ServiceAskRecipeFuncCall{v0, v1, r0, r1})
 	return r0, r1
 }
 
 // SetDefaultHook sets function that is called when the AskRecipe method of
 // the parent MockService instance is invoked and the hook queue is empty.
-func (f *ServiceAskRecipeFunc) SetDefaultHook(hook func(recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)) {
+func (f *ServiceAskRecipeFunc) SetDefaultHook(hook func(context.Context, recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)) {
 	f.defaultHook = hook
 }
 
@@ -86,7 +87,7 @@ func (f *ServiceAskRecipeFunc) SetDefaultHook(hook func(recipegenerator.RecipeDe
 // AskRecipe method of the parent MockService instance invokes the hook at
 // the front of the queue and discards it. After the queue is empty, the
 // default hook function is invoked for any future action.
-func (f *ServiceAskRecipeFunc) PushHook(hook func(recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)) {
+func (f *ServiceAskRecipeFunc) PushHook(hook func(context.Context, recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error)) {
 	f.mutex.Lock()
 	f.hooks = append(f.hooks, hook)
 	f.mutex.Unlock()
@@ -95,19 +96,19 @@ func (f *ServiceAskRecipeFunc) PushHook(hook func(recipegenerator.RecipeDefiniti
 // SetDefaultReturn calls SetDefaultHook with a function that returns the
 // given values.
 func (f *ServiceAskRecipeFunc) SetDefaultReturn(r0 recipegenerator.Recipe, r1 error) {
-	f.SetDefaultHook(func(recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
+	f.SetDefaultHook(func(context.Context, recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
 		return r0, r1
 	})
 }
 
 // PushReturn calls PushHook with a function that returns the given values.
 func (f *ServiceAskRecipeFunc) PushReturn(r0 recipegenerator.Recipe, r1 error) {
-	f.PushHook(func(recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
+	f.PushHook(func(context.Context, recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
 		return r0, r1
 	})
 }
 
-func (f *ServiceAskRecipeFunc) nextHook() func(recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
+func (f *ServiceAskRecipeFunc) nextHook() func(context.Context, recipegenerator.RecipeDefinitions) (recipegenerator.Recipe, error) {
 	f.mutex.Lock()
 	defer f.mutex.Unlock()
 
@@ -142,7 +143,10 @@ func (f *ServiceAskRecipeFunc) History() []ServiceAskRecipeFuncCall {
 type ServiceAskRecipeFuncCall struct {
 	// Arg0 is the value of the 1st argument passed to this method
 	// invocation.
-	Arg0 recipegenerator.RecipeDefinitions
+	Arg0 context.Context
+	// Arg1 is the value of the 2nd argument passed to this method
+	// invocation.
+	Arg1 recipegenerator.RecipeDefinitions
 	// Result0 is the value of the 1st result returned from this method
 	// invocation.
 	Result0 recipegenerator.Recipe
@@ -154,7 +158,7 @@ type ServiceAskRecipeFuncCall struct {
 // Args returns an interface slice containing the arguments of this
 // invocation.
 func (c ServiceAskRecipeFuncCall) Args() []interface{} {
-	return []interface{}{c.Arg0}
+	return []interface{}{c.Arg0, c.Arg1}
 }
 
 // Results returns an interface slice containing the results of this
