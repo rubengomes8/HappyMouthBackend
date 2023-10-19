@@ -3,21 +3,10 @@ aws dynamodb create-table --endpoint-url http://localhost:8000 --table-name ingr
   	--key-schema AttributeName=name,KeyType=HASH \
   	--provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
 
-aws dynamodb create-table --endpoint-url http://localhost:8000  --table-name generated_recipes \
-	--attribute-definitions AttributeName=id,AttributeType=S \
-  	--key-schema AttributeName=id,KeyType=HASH \
-  	--provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
-
 aws dynamodb create-table --endpoint-url http://localhost:8000  --table-name users \
 	--attribute-definitions AttributeName=email,AttributeType=S \
   	--key-schema AttributeName=email,KeyType=HASH \
   	--provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
-
-aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name generated_recipes \
-	--item "file://docker/dynamodb/recipes/meat,oregon,potato|onion.json"
-
-aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name generated_recipes \
-	--item "file://docker/dynamodb/recipes/mushroom,tomato|honey,onion.json"
 
 aws dynamodb put-item --endpoint-url http://localhost:8000 --table-name ingredients \
 	--item file://docker/dynamodb/ingredients/garlic.json
