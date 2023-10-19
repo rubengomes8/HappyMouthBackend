@@ -14,7 +14,6 @@ import (
 	"github.com/gofrs/uuid"
 
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator/examples"
-	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
 )
 
@@ -31,26 +30,32 @@ var (
 	instructionsTemplate = "I would like to have only 4 sections separated by the pipe character |. Something like the following: name: x | ingredients: y | instructions: w | calories per serving: z. Also, split the list of ingredients by semicolon character ;"
 )
 
+//go:generate go-mockgen -f ./ -i service -d ./mocks/
+type repo interface {
+	GetRecipeByKey(ctx context.Context, key string) (Recipe, error)
+	StoreRecipe(ctx context.Context, key string, recipe Recipe) error
+}
+
 type Service struct {
-	OpenAIAPIEndpoint string
-	OpenAIAPIKey      string
-	OpenAIClient      *resty.Client
-	Producer          sarama.SyncProducer
-	Cache             *redis.Cache
+	openAIAPIEndpoint string
+	openAIAPIKey      string
+	openAIClient      *resty.Client
+	producer          sarama.SyncProducer
+	repo              repo
 }
 
 func NewService(
 	openAIEndpoint,
 	openAIKey string,
-	cache *redis.Cache,
 	producer sarama.SyncProducer,
+	repo repo,
 ) Service {
 	return Service{
-		OpenAIAPIEndpoint: openAIEndpoint,
-		OpenAIAPIKey:      openAIKey,
-		OpenAIClient:      resty.New(),
-		Producer:          producer,
-		Cache:             cache,
+		openAIAPIEndpoint: openAIEndpoint,
+		openAIAPIKey:      openAIKey,
+		openAIClient:      resty.New(),
+		producer:          producer,
+		repo:              repo,
 	}
 }
 
@@ -58,14 +63,12 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 
 	recipeKey := getRecipeKey(recipeRequest.IncludeIngredients, recipeRequest.ExcludeIngredients)
 
-	var cachedRecipe Recipe
-	err := s.Cache.Get(ctx, recipeKey, &cachedRecipe)
-	if err != nil && err != redis.ErrNotFound {
+	recipe, err := s.repo.GetRecipeByKey(ctx, recipeKey)
+	if err != nil {
 		return Recipe{}, err
 	}
-
-	if cachedRecipe.HasTitle() {
-		return cachedRecipe, nil
+	if recipe.HasTitle() {
+		return recipe, nil
 	}
 
 	var recipeStr string
@@ -99,19 +102,20 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 	}
 
 	if useKafka {
-		_, _, err := ProduceRecipeEvent(s.Producer, recipeKey, recipeStr, gptRecipesTopic)
+		_, _, err := ProduceRecipeEvent(s.producer, recipeKey, recipeStr, gptRecipesTopic)
 		if err != nil {
 			return Recipe{}, err
 		}
 	}
 
 	// fmt.Println("content")
-	recipe, err := parseRecipeString(recipeStr)
+	parsedRecipe, err := parseRecipeString(recipeStr)
 	if err != nil {
 		return Recipe{}, err
 	}
 
-	err = s.Cache.Set(ctx, recipeKey, recipe, 0 /* ttl */)
+	// TODO: add recipeKey to user.recipes
+	err = s.repo.StoreRecipe(ctx, recipeKey, parsedRecipe)
 	if err != nil {
 		return Recipe{}, err
 	}
@@ -141,8 +145,8 @@ func createOpenAPIQuestion(includeIngredients, excludeIngredients []string) stri
 
 func (s Service) getRecipeFromOpenAPI(question string) (*resty.Response, error) {
 
-	response, err := s.OpenAIClient.R().
-		SetAuthToken(s.OpenAIAPIKey).
+	response, err := s.openAIClient.R().
+		SetAuthToken(s.openAIAPIKey).
 		SetHeader("Content-Type", "application/json").
 		SetBody(map[string]interface{}{
 			"model": "gpt-3.5-turbo",
@@ -151,7 +155,7 @@ func (s Service) getRecipeFromOpenAPI(question string) (*resty.Response, error) 
 				"content": question}},
 			"max_tokens": 500,
 		}).
-		Post(s.OpenAIAPIEndpoint)
+		Post(s.openAIAPIEndpoint)
 	if err != nil {
 		return nil, err
 	}

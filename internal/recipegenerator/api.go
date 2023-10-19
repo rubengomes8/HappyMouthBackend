@@ -23,8 +23,8 @@ type API struct {
 }
 
 func NewAPI(cache *redis.Cache, producer sarama.SyncProducer) *mux.Router {
-
-	svc := NewService(openAIEndpoint, openAIKey, cache, producer)
+	repo := NewRepository(cache)
+	svc := NewService(openAIEndpoint, openAIKey, producer, repo)
 	h := NewHandler(svc)
 	api := API{
 		handler: h,
