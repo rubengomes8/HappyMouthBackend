@@ -39,7 +39,7 @@ func (h Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 
 	recipe, err := h.svc.AskRecipe(r.Context(), recipeRequest)
 	if err != nil {
-		http.Error(w, "failed to build recipe", http.StatusInternalServerError)
+		http.Error(w, fmt.Errorf("failed to build recipe: %v", err).Error(), http.StatusInternalServerError)
 		return
 	}
 
