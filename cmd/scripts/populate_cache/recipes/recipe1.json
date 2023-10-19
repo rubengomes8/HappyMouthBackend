@@ -1,7 +1,6 @@
 {
     "id": "meat,oregon,potato|onion",
     "title": "delicious steak with french fries",
-    "is_favorite": true,
     "ingredients": [
       "4 potatoes",
       "2 tablespoons of olive oil",
