@@ -58,8 +58,8 @@ func (r RecipeDefinitions) validate() error {
 	return nil
 }
 
-// key format: includedIngredients|excludedIngredients|timestamp.RFC3339
-// key example: mushroom,tomato|onion|2019-10-12T07:20:50.52Z
+// key format: includedIngredients|excludedIngredients
+// key example: mushroom,tomato|onion
 func getRecipeKey(
 	includeIngredients []string,
 	excludeIngredients []string,
