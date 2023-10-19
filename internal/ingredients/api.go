@@ -5,7 +5,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/gorilla/mux"
-	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 )
 
 type handler interface {
@@ -16,9 +15,10 @@ type API struct {
 	handler handler
 }
 
-func NewAPI(cache *redis.Cache, dynDB *dynamodb.Client) (*mux.Router, error) {
+func NewAPI(dynamoDB *dynamodb.Client) (*mux.Router, error) {
 
-	svc := NewService(cache, dynDB)
+	repo := NewRepository(dynamoDB)
+	svc := NewService(repo)
 	h := NewHandler(svc)
 	api := API{
 		handler: h,
