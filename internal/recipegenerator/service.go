@@ -120,7 +120,7 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 		return Recipe{}, err
 	}
 
-	return recipe, nil
+	return parsedRecipe, nil
 }
 
 func createOpenAPIQuestion(includeIngredients, excludeIngredients []string) string {
