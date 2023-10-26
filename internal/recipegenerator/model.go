@@ -5,12 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gofrs/uuid"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
 )
 
 type Recipe struct {
-	ID           uuid.UUID         `json:"id"`
+	ID           string            `json:"id"`
 	Title        string            `json:"title"`
 	IsFavorite   bool              `json:"is_favorite"`
 	Definitions  RecipeDefinitions `json:"definitions"`

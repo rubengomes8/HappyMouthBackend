@@ -8,7 +8,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gofrs/uuid"
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator/mocks"
 	"github.com/stretchr/testify/assert"
@@ -97,10 +96,7 @@ func TestHandler_CreateRecipe(t *testing.T) {
 				}
 
 				mockSvc.AskRecipeFunc.PushReturn(recipegenerator.Recipe{
-					ID: func() uuid.UUID {
-						id, _ := uuid.FromString("A21040C9-017C-4A34-8449-F5FE26098B93")
-						return id
-					}(),
+					ID: "A21040C9-017C-4A34-8449-F5FE26098B93",
 				}, nil)
 				return req
 			},
@@ -117,10 +113,7 @@ func TestHandler_CreateRecipe(t *testing.T) {
 					t.Fatal(err)
 				}
 				expected := recipegenerator.Recipe{
-					ID: func() uuid.UUID {
-						id, _ := uuid.FromString("A21040C9-017C-4A34-8449-F5FE26098B93")
-						return id
-					}(),
+					ID: "A21040C9-017C-4A34-8449-F5FE26098B93",
 				}
 				assert.Equal(t, expected, got)
 			},

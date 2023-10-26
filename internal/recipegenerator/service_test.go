@@ -137,6 +137,7 @@ func Test_getRecipeInstructions(t *testing.T) {
 func Test_parseRecipeString(t *testing.T) {
 	type args struct {
 		recipeStr string
+		recipeKey string
 	}
 	tests := []struct {
 		name    string
@@ -148,6 +149,7 @@ func Test_parseRecipeString(t *testing.T) {
 			name: "parse recipe string",
 			args: args{
 				recipeStr: examples.Answer,
+				recipeKey: "tomato,mushroom",
 			},
 			want: Recipe{
 				Title: "tomato mushroom salad",
@@ -175,7 +177,7 @@ func Test_parseRecipeString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parseRecipeString(tt.args.recipeStr)
+			got, err := parseRecipeString(tt.args.recipeStr, tt.args.recipeKey)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("parseRecipeString() error = %v, wantErr %v", err, tt.wantErr)
 				return

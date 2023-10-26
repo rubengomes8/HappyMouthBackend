@@ -1,9 +1,19 @@
 package main
 
 import (
+	"context"
 	"encoding/csv"
-	"fmt"
+	"encoding/json"
+	"log"
 	"os"
+	"strings"
+
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
+	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
+)
+
+const (
+	pathToPopulateCacheDir = "cmd/scripts/populate_cache/"
 )
 
 func readCSVFile(filename string) (map[string]string, error) {
@@ -37,23 +47,51 @@ func readCSVFile(filename string) (map[string]string, error) {
 
 func main() {
 
-	// 1. Abrir CSV
-	// 2. Construir Mapa(Dicionário) map[string]string
-	// 3. Fazer print do mapa
-	// 4. Guardar filepaths dos JSON para processar
-	// 5. Por cada ficheiro JSON, ler a receita e guardar numa BD
+	ctx := context.Background()
 
-	filename := "recipes.csv" // Change this to the path of your CSV file
-
-	data, err := readCSVFile(filename)
+	wd, err := os.Getwd()
 	if err != nil {
-		fmt.Printf("Error reading CSV: %v\n", err)
-		return
+		log.Fatal(err)
 	}
 
-	fmt.Println(data)
-	for recipeKey, filePath := range data {
-		fmt.Printf("%s: %s\n", recipeKey, filePath)
+	filename := "recipes.csv"
+	if !strings.Contains(wd, "cmd") {
+		filename = pathToPopulateCacheDir + filename
 	}
 
+	mapRecipeKeyToFilePath, err := readCSVFile(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cache := redis.NewClient("localhost:6379", 0)
+	if err := cache.Ping(ctx); err != nil {
+		log.Fatal(err)
+	}
+
+	var fileRecipe recipegenerator.Recipe
+	for recipeKey, filePath := range mapRecipeKeyToFilePath {
+		if recipeKey == "recipe_key" {
+			continue
+		}
+
+		if !strings.Contains(wd, "cmd") {
+			filePath = pathToPopulateCacheDir + filePath
+		}
+
+		file, err := os.ReadFile(filePath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal([]byte(file), &fileRecipe)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = cache.Set(ctx, recipeKey, fileRecipe, 0)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
