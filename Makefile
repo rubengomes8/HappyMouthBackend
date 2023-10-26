@@ -22,3 +22,7 @@ dynamo-up:
 dynamo-down:
 	./docker/dynamodb/clean.sh
 
+# REDIS #
+redis-up:
+	go run cmd/scripts/populate_cache/main.go
+

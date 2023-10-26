@@ -11,7 +11,6 @@ import (
 
 	"github.com/IBM/sarama"
 	"github.com/go-resty/resty/v2"
-	"github.com/gofrs/uuid"
 
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator/examples"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
@@ -109,7 +108,7 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 	}
 
 	// fmt.Println("content")
-	parsedRecipe, err := parseRecipeString(recipeStr)
+	parsedRecipe, err := parseRecipeString(recipeStr, recipeKey)
 	if err != nil {
 		return Recipe{}, err
 	}
@@ -196,7 +195,7 @@ func getOpenAPIRecipeString(data map[string]interface{}) (string, error) {
 	return message["content"].(string), nil
 }
 
-func parseRecipeString(recipeStr string) (Recipe, error) {
+func parseRecipeString(recipeStr, recipeKey string) (Recipe, error) {
 
 	lowerRecipeStr := strings.ToLower(recipeStr)
 	splittedByPipe := strings.Split(lowerRecipeStr, "|")
@@ -207,7 +206,7 @@ func parseRecipeString(recipeStr string) (Recipe, error) {
 
 	now := time.Now().UTC()
 	return Recipe{
-		ID:           uuid.Must(uuid.NewV4()),
+		ID:           recipeKey,
 		Title:        getRecipeName(splittedByPipe[0]),
 		Ingredients:  getRecipeIngredients(splittedByPipe[1]),
 		Instructions: getRecipeInstructions(splittedByPipe[2]),
