@@ -39,6 +39,11 @@ func (s Service) LoginUser(ctx context.Context, req LoginInput) (string, error) 
 		return "", err
 	}
 
+	err = corejwt.VerifyPassword(req.Password, user.Passhash)
+	if err != nil {
+		return "", err
+	}
+
 	token, err := s.tokenSvc.GenerateToken(uint(user.ID))
 	if err != nil {
 		return "", err

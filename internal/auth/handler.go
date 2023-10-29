@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	corejwt "github.com/rubengomes8/HappyCore/pkg/jwt"
 	"github.com/rubengomes8/HappyMouthBackend/internal/users"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //go:generate go-mockgen -f ./ -i userService -d ./mocks/
@@ -65,6 +66,10 @@ func (h Handler) Login(ctx *gin.Context) {
 		Username: input.Username,
 	})
 	if err != nil {
+		if err == bcrypt.ErrMismatchedHashAndPassword {
+			ctx.JSON(http.StatusInternalServerError, "invalid password")
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, fmt.Sprintf("could not login user: %v", err))
 		return
 	}

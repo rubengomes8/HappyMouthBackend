@@ -27,8 +27,8 @@ func (a API) SetupRouter() *gin.Engine {
 	r := gin.Default()
 	v1 := r.Group("/v1")
 	{
-		v1.POST("/users/register", a.handler.Register)
-		v1.POST("/users/login", a.handler.Login)
+		v1.POST("/auth/register", a.handler.Register)
+		v1.POST("/auth/login", a.handler.Login)
 	}
 	return r
 }
