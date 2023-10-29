@@ -12,17 +12,17 @@ type service interface {
 	GetIngredients(ctx context.Context, reqOptions ReqOptions) ([]Ingredient, error)
 }
 
-type Handler struct {
+type IngredientsHandler struct {
 	svc service
 }
 
-func NewHandler(svc service) Handler {
-	return Handler{
+func NewIngredientsHandler(svc service) IngredientsHandler {
+	return IngredientsHandler{
 		svc: svc,
 	}
 }
 
-func (h Handler) GetIngredients(ctx *gin.Context) {
+func (h IngredientsHandler) GetIngredients(ctx *gin.Context) {
 
 	sortByName, err := getBoolQueryParamWithDefault(ctx, "sort-by-name", false)
 	if err != nil {

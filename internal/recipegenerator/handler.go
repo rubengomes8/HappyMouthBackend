@@ -12,17 +12,17 @@ type service interface {
 	AskRecipe(context.Context, RecipeDefinitions) (Recipe, error)
 }
 
-type Handler struct {
+type RecipesHandler struct {
 	svc service
 }
 
-func NewHandler(svc service) Handler {
-	return Handler{
+func NewRecipesHandler(svc service) RecipesHandler {
+	return RecipesHandler{
 		svc: svc,
 	}
 }
 
-func (h Handler) CreateRecipe(ctx *gin.Context) {
+func (h RecipesHandler) CreateRecipe(ctx *gin.Context) {
 
 	var recipeRequest RecipeDefinitions
 	if err := ctx.ShouldBindJSON(&recipeRequest); err != nil {

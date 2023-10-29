@@ -1,7 +1,0 @@
-{
-    "email": {"S":  "ruben.d.s.gomes11@gmail.com"},
-    "recipes": {"SS": [
-       "meat,oregon,potato|onion",
-       "mushroom,tomato|honey,onion"
-    ]}
-}

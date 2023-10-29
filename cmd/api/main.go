@@ -6,6 +6,7 @@ import (
 
 	"github.com/IBM/sarama"
 	corepg "github.com/rubengomes8/HappyCore/pkg/postgres"
+	apiroutes "github.com/rubengomes8/HappyMouthBackend/internal"
 	"github.com/rubengomes8/HappyMouthBackend/internal/auth"
 	"github.com/rubengomes8/HappyMouthBackend/internal/ingredients"
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
@@ -54,20 +55,21 @@ func main() {
 		defer producer.Close()
 	}
 
-	// AUTH API - GIN + PGSQL GORM
-	err = auth.NewAPI(postgresDB).Run("localhost:8080")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// INGREDIENTS - GIN + DYNAMO
+	ingredientsAPI := ingredients.NewAPI(dynamoDBClient)
 
-	// INGREDIENTS ROUTER - GIN + DYNAMO
-	err = ingredients.NewAPI(dynamoDBClient).Run("localhost:8080")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// RECIPE GENERATOR - GIN + REDIS
+	recipesAPI := recipegenerator.NewAPI(cache, producer)
 
-	// RECIPE GENERATOR API - GIN + REDIS
-	err = recipegenerator.NewAPI(cache, producer).Run("localhost:8080")
+	// AUTH - GIN + PGSQL GORM
+	authAPI := auth.NewAPI(postgresDB)
+
+	err = apiroutes.SetAPIRoutes(
+		authAPI.Handler,
+		recipesAPI.Handler,
+		ingredientsAPI.Handler,
+	).
+		Run(":8080")
 	if err != nil {
 		log.Fatal(err)
 	}

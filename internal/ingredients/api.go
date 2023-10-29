@@ -5,31 +5,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type handler interface {
+type Handler interface {
 	GetIngredients(ctx *gin.Context)
 }
 
 type API struct {
-	handler handler
+	Handler Handler
 }
 
-func NewAPI(dynamoDB *dynamodb.Client) *gin.Engine {
-
+func NewAPI(dynamoDB *dynamodb.Client) API {
 	repo := NewRepository(dynamoDB)
 	svc := NewService(repo)
-	h := NewHandler(svc)
-	api := API{
-		handler: h,
+	h := NewIngredientsHandler(svc)
+	return API{
+		Handler: h,
 	}
-
-	return api.SetupRouter()
-}
-
-func (a API) SetupRouter() *gin.Engine {
-	r := gin.Default()
-	v1 := r.Group("/v1")
-	{
-		v1.GET("/ingredients", a.handler.GetIngredients)
-	}
-	return r
 }

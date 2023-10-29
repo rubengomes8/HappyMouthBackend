@@ -5,32 +5,21 @@ import (
 	"gorm.io/gorm"
 )
 
-type handler interface {
+type Handler interface {
 	Register(ctx *gin.Context)
 	Login(ctx *gin.Context)
 }
 
 type API struct {
-	handler handler
+	Handler Handler
 }
 
-func NewAPI(db *gorm.DB) *gin.Engine {
+func NewAPI(db *gorm.DB) API {
 	repo := NewRepository(db)
 	svc := NewService(repo)
-	h := NewHandler(svc)
-	api := API{
-		handler: h,
+	h := NewAuthHandler(svc)
+	return API{
+		Handler: h,
 	}
 
-	return api.SetupRouter()
-}
-
-func (a API) SetupRouter() *gin.Engine {
-	r := gin.Default()
-	v1 := r.Group("/v1")
-	{
-		v1.POST("/auth/register", a.handler.Register)
-		v1.POST("/auth/login", a.handler.Login)
-	}
-	return r
 }

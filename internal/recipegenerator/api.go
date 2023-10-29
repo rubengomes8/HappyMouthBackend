@@ -12,29 +12,19 @@ const (
 	kafkaBrokerAddress = "localhost:9092"
 )
 
-type handler interface {
+type Handler interface {
 	CreateRecipe(ctx *gin.Context)
 }
 
 type API struct {
-	handler handler
+	Handler Handler
 }
 
-func NewAPI(cache *redis.Cache, producer sarama.SyncProducer) *gin.Engine {
+func NewAPI(cache *redis.Cache, producer sarama.SyncProducer) API {
 	repo := NewRepository(cache)
 	svc := NewService(openAIEndpoint, openAIKey, producer, repo)
-	h := NewHandler(svc)
-	api := API{
-		handler: h,
+	h := NewRecipesHandler(svc)
+	return API{
+		Handler: h,
 	}
-	return api.SetupRouter()
-}
-
-func (a API) SetupRouter() *gin.Engine {
-	r := gin.Default()
-	v1 := r.Group("/v1")
-	{
-		v1.POST("/recipes", a.handler.CreateRecipe)
-	}
-	return r
 }

@@ -16,17 +16,17 @@ type service interface {
 	LoginUser(ctx context.Context, req LoginInput) (string, error)
 }
 
-type Handler struct {
+type AuthHandler struct {
 	svc service
 }
 
-func NewHandler(svc service) Handler {
-	return Handler{
+func NewAuthHandler(svc service) AuthHandler {
+	return AuthHandler{
 		svc: svc,
 	}
 }
 
-func (h Handler) Register(ctx *gin.Context) {
+func (h AuthHandler) Register(ctx *gin.Context) {
 
 	var input RegisterInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -53,7 +53,7 @@ func (h Handler) Register(ctx *gin.Context) {
 	ctx.Writer.Flush()
 }
 
-func (h Handler) Login(ctx *gin.Context) {
+func (h AuthHandler) Login(ctx *gin.Context) {
 
 	var input LoginInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
