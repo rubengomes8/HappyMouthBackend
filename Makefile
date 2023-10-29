@@ -26,3 +26,14 @@ dynamo-down:
 redis-up:
 	go run cmd/scripts/populate_cache/main.go
 
+# POSTGRES #
+database-migrate:
+	DB_HOST=localhost DB_PORT=5432 DB_USER=postgres DB_PWD=passw0rd123 DB_NAME=database DB_MIGRATIONS_PATH=./db/migrations go run ./cmd/dbcli/main.go migrate
+
+database-rollback:
+	go run ./cmd/dbcli/main.go rollback
+
+migrate-create:
+	migrate create -ext sql -dir db/migrations/ $(MIGRATION)
+	ls db/migrations/*.up.sql -r1 | head -n 1 > db/last_migration
+
