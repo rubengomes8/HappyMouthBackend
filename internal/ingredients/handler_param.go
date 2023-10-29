@@ -1,12 +1,13 @@
 package ingredients
 
 import (
-	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-func GetBoolQueryParamWithDefault(r *http.Request, queryParam string, defaultValue bool) (bool, error) {
-	strValue := r.FormValue("sort-by-name")
+func getBoolQueryParamWithDefault(ctx *gin.Context, queryParam string, defaultValue bool) (bool, error) {
+	strValue := ctx.Query("sort-by-name")
 	if strValue == "" {
 		return defaultValue, nil
 	}

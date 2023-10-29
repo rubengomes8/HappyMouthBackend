@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
 
 	corepg "github.com/rubengomes8/HappyCore/pkg/postgres"
 	"github.com/rubengomes8/HappyMouthBackend/internal/auth"
@@ -28,21 +27,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// AUTH API - GIN + GORM
-	authAPI := auth.NewAPI(postgresDB)
-	authRouter := authAPI.SetupRouter()
-	err = authRouter.Run("localhost:8083")
+	// AUTH API - GIN + PGSQL GORM
+	err = auth.NewAPI(postgresDB).Run("localhost:8080")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// INGREDIENTS ROUTER - GORILLA MUX
-	ingredientsRouter, err := ingredients.NewAPI(dynamoDBClient)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = http.ListenAndServe(":8082", ingredientsRouter)
+	// INGREDIENTS ROUTER - GIN + DYNAMO
+	err = ingredients.NewAPI(dynamoDBClient).Run("localhost:8080")
 	if err != nil {
 		log.Fatal(err)
 	}

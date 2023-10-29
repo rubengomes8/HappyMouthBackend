@@ -1,10 +1,8 @@
 package recipegenerator
 
 import (
-	"net/http"
-
 	"github.com/IBM/sarama"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 )
 
@@ -15,26 +13,28 @@ const (
 )
 
 type handler interface {
-	CreateRecipe(http.ResponseWriter, *http.Request)
+	CreateRecipe(ctx *gin.Context)
 }
 
 type API struct {
 	handler handler
 }
 
-func NewAPI(cache *redis.Cache, producer sarama.SyncProducer) *mux.Router {
+func NewAPI(cache *redis.Cache, producer sarama.SyncProducer) *gin.Engine {
 	repo := NewRepository(cache)
 	svc := NewService(openAIEndpoint, openAIKey, producer, repo)
 	h := NewHandler(svc)
 	api := API{
 		handler: h,
 	}
-	return api.SetRoutes()
+	return api.SetupRouter()
 }
 
-func (a API) SetRoutes() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/api/recipes", a.handler.CreateRecipe).
-		Methods(http.MethodPost)
+func (a API) SetupRouter() *gin.Engine {
+	r := gin.Default()
+	v1 := r.Group("/v1")
+	{
+		v1.POST("/recipes", a.handler.CreateRecipe)
+	}
 	return r
 }

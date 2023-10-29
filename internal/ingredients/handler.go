@@ -2,9 +2,9 @@ package ingredients
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
@@ -22,27 +22,24 @@ func NewHandler(svc service) Handler {
 	}
 }
 
-func (h Handler) GetIngredients(w http.ResponseWriter, r *http.Request) {
+func (h Handler) GetIngredients(ctx *gin.Context) {
 
-	sortByName, err := GetBoolQueryParamWithDefault(r, "sort-by-name", false)
+	sortByName, err := getBoolQueryParamWithDefault(ctx, "sort-by-name", false)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	options := ReqOptions{
 		SortByName: sortByName,
 	}
 
-	ingredients, err := h.svc.GetIngredients(r.Context(), options)
+	ingredients, err := h.svc.GetIngredients(ctx, options)
 	if err != nil {
-		http.Error(w, fmt.Errorf("failed to build recipe: %v", err).Error(), http.StatusInternalServerError)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	err = json.NewEncoder(w).Encode(ingredients)
-	if err != nil {
-		http.Error(w, fmt.Errorf("failed to encode recipe response: %v", err).Error(), http.StatusInternalServerError)
-	}
+	ctx.JSON(http.StatusOK, ingredients)
+	ctx.Writer.Flush()
 }

@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -31,13 +30,13 @@ func (h Handler) Register(ctx *gin.Context) {
 
 	var input RegisterInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, fmt.Sprintf("invalid body: %v", err))
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	hashedPassword, err := corejwt.EncryptPassword(input.Password)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -46,7 +45,7 @@ func (h Handler) Register(ctx *gin.Context) {
 		Passhash: hashedPassword,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, fmt.Sprintf("could not register user: %v", err))
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -58,7 +57,7 @@ func (h Handler) Login(ctx *gin.Context) {
 
 	var input LoginInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, fmt.Sprintf("invalid body: %v", err))
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -67,10 +66,10 @@ func (h Handler) Login(ctx *gin.Context) {
 	})
 	if err != nil {
 		if err == bcrypt.ErrMismatchedHashAndPassword {
-			ctx.JSON(http.StatusInternalServerError, "invalid password")
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		ctx.JSON(http.StatusInternalServerError, fmt.Sprintf("could not login user: %v", err))
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

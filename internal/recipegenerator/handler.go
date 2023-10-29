@@ -2,9 +2,9 @@ package recipegenerator
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
@@ -22,32 +22,26 @@ func NewHandler(svc service) Handler {
 	}
 }
 
-func (h Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
+func (h Handler) CreateRecipe(ctx *gin.Context) {
 
 	var recipeRequest RecipeDefinitions
-	err := json.NewDecoder(r.Body).Decode(&recipeRequest)
-	if err != nil {
-		http.Error(w, "failed to parse request body", http.StatusBadRequest)
+	if err := ctx.ShouldBindJSON(&recipeRequest); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = recipeRequest.validate()
+	err := recipeRequest.validate()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	recipe, err := h.svc.AskRecipe(r.Context(), recipeRequest)
+	recipe, err := h.svc.AskRecipe(ctx, recipeRequest)
 	if err != nil {
-		http.Error(w, fmt.Errorf("failed to build recipe: %v", err).Error(), http.StatusInternalServerError)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(recipe)
-	if err != nil {
-		http.Error(w, fmt.Errorf("failed to encode recipe response: %v", err).Error(), http.StatusInternalServerError)
-		return
-	}
+	ctx.JSON(http.StatusOK, recipe)
+	ctx.Writer.Flush()
 }

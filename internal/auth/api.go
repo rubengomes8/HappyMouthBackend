@@ -14,13 +14,15 @@ type API struct {
 	handler handler
 }
 
-func NewAPI(db *gorm.DB) API {
+func NewAPI(db *gorm.DB) *gin.Engine {
 	repo := NewRepository(db)
 	svc := NewService(repo)
 	h := NewHandler(svc)
-	return API{
+	api := API{
 		handler: h,
 	}
+
+	return api.SetupRouter()
 }
 
 func (a API) SetupRouter() *gin.Engine {

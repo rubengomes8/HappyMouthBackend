@@ -1,21 +1,19 @@
 package ingredients
 
 import (
-	"net/http"
-
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 type handler interface {
-	GetIngredients(http.ResponseWriter, *http.Request)
+	GetIngredients(ctx *gin.Context)
 }
 
 type API struct {
 	handler handler
 }
 
-func NewAPI(dynamoDB *dynamodb.Client) (*mux.Router, error) {
+func NewAPI(dynamoDB *dynamodb.Client) *gin.Engine {
 
 	repo := NewRepository(dynamoDB)
 	svc := NewService(repo)
@@ -24,12 +22,14 @@ func NewAPI(dynamoDB *dynamodb.Client) (*mux.Router, error) {
 		handler: h,
 	}
 
-	return api.SetIngredientsRoutes(), nil
+	return api.SetupRouter()
 }
 
-func (a API) SetIngredientsRoutes() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/api/ingredients", a.handler.GetIngredients).
-		Methods(http.MethodGet)
+func (a API) SetupRouter() *gin.Engine {
+	r := gin.Default()
+	v1 := r.Group("/v1")
+	{
+		v1.GET("/ingredients", a.handler.GetIngredients)
+	}
 	return r
 }

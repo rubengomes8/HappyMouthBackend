@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
 
 	"github.com/IBM/sarama"
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
@@ -12,6 +11,7 @@ import (
 
 const (
 	kafkaBrokerAddress = "localhost:9092"
+	useKafka           = false
 )
 
 func main() {
@@ -19,14 +19,17 @@ func main() {
 	ctx := context.Background()
 
 	// KAFKA
-	config := sarama.NewConfig()
-	config.Producer.Return.Successes = true
+	var producer sarama.SyncProducer
+	if useKafka {
+		config := sarama.NewConfig()
+		config.Producer.Return.Successes = true
 
-	producer, err := sarama.NewSyncProducer([]string{kafkaBrokerAddress}, config)
-	if err != nil {
-		log.Fatal(err)
+		producer, err := sarama.NewSyncProducer([]string{kafkaBrokerAddress}, config)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer producer.Close()
 	}
-	defer producer.Close()
 
 	// REDIS
 	cache := redis.NewClient("localhost:6379", 0)
@@ -35,12 +38,7 @@ func main() {
 	}
 
 	// API
-	recipeRouter := recipegenerator.NewAPI(cache, producer)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = http.ListenAndServe(":8080", recipeRouter)
+	err := recipegenerator.NewAPI(cache, producer).Run("localhost:8080")
 	if err != nil {
 		log.Fatal(err)
 	}

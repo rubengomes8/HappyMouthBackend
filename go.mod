@@ -11,12 +11,12 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-resty/resty/v2 v2.8.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
-	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/redis/go-redis/v9 v9.2.1
 	github.com/rubengomes8/HappyCore v0.0.0-20231029122607-ade1250aca27
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli v1.22.14
+	golang.org/x/crypto v0.14.0
 	gorm.io/gorm v1.25.5
 )
 
@@ -95,7 +95,6 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/mod v0.9.0 // indirect
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
