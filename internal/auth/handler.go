@@ -5,9 +5,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	corejwt "github.com/rubengomes8/HappyCore/pkg/jwt"
 	"github.com/rubengomes8/HappyMouthBackend/internal/users"
 	"golang.org/x/crypto/bcrypt"
+
+	corejwt "github.com/rubengomes8/HappyCore/pkg/jwt"
+	passwordvalidator "github.com/wagslane/go-password-validator"
+)
+
+const (
+	passwordMinEntropyBits = 50
 )
 
 //go:generate go-mockgen -f ./ -i userService -d ./mocks/
@@ -31,6 +37,12 @@ func (h AuthHandler) Register(ctx *gin.Context) {
 	var input RegisterInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := passwordvalidator.Validate(input.Password, passwordMinEntropyBits)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": ErrWeakPassword.Error()})
 		return
 	}
 

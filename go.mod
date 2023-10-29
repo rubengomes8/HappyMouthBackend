@@ -16,6 +16,7 @@ require (
 	github.com/rubengomes8/HappyCore v0.0.0-20231029122607-ade1250aca27
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli v1.22.14
+	github.com/wagslane/go-password-validator v0.3.0
 	golang.org/x/crypto v0.14.0
 	gorm.io/gorm v1.25.5
 )
