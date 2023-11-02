@@ -29,11 +29,12 @@ func (r Repository) CreateUser(ctx context.Context, user users.User) error {
 	return nil
 }
 
-func (r Repository) GetUser(ctx context.Context, filters users.UserFilters) (users.User, error) {
+func (r Repository) GetUserByUsername(ctx context.Context, username string) (users.User, error) {
 	var user users.User
 	err := r.db.WithContext(ctx).
-		Model(&user).
-		Find(&user).
+		Model(users.User{}).
+		Where("username = ?", username).
+		First(&user).
 		Error
 	if err != nil {
 		return users.User{}, err

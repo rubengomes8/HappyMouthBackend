@@ -1,15 +1,15 @@
 module github.com/rubengomes8/HappyMouthBackend
 
-go 1.21.0
+go 1.19
 
 require (
-	github.com/IBM/sarama v1.41.2
+	github.com/IBM/sarama v1.41.3
 	github.com/aws/aws-sdk-go-v2 v1.21.2
-	github.com/aws/aws-sdk-go-v2/config v1.18.45
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.10.42
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.22.2
+	github.com/aws/aws-sdk-go-v2/config v1.19.1
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.10.43
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.23.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-resty/resty/v2 v2.8.0
+	github.com/go-resty/resty/v2 v2.10.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/redis/go-redis/v9 v9.2.1
@@ -96,8 +96,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/mod v0.9.0 // indirect
-	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect

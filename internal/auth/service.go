@@ -9,7 +9,7 @@ import (
 )
 
 type repo interface {
-	GetUser(ctx context.Context, filters users.UserFilters) (users.User, error)
+	GetUserByUsername(ctx context.Context, username string) (users.User, error)
 	CreateUser(ctx context.Context, user users.User) error
 }
 
@@ -32,9 +32,7 @@ func NewService(repo repo) Service {
 
 func (s Service) LoginUser(ctx context.Context, req LoginInput) (string, error) {
 
-	user, err := s.repo.GetUser(ctx, users.UserFilters{
-		Username: req.Username,
-	})
+	user, err := s.repo.GetUserByUsername(ctx, req.Username)
 	if err != nil {
 		return "", err
 	}

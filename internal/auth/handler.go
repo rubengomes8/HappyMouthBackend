@@ -55,6 +55,7 @@ func (h AuthHandler) Register(ctx *gin.Context) {
 	err = h.svc.RegisterUser(ctx, users.User{
 		Username: input.Username,
 		Passhash: hashedPassword,
+		Email:    input.Email,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -75,6 +76,7 @@ func (h AuthHandler) Login(ctx *gin.Context) {
 
 	token, err := h.svc.LoginUser(ctx, LoginInput{
 		Username: input.Username,
+		Password: input.Password,
 	})
 	if err != nil {
 		if err == bcrypt.ErrMismatchedHashAndPassword {
