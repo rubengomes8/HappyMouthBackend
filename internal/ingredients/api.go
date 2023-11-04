@@ -6,6 +6,7 @@ import (
 )
 
 type Handler interface {
+	JWTAuthMiddleware() gin.HandlerFunc
 	GetIngredients(ctx *gin.Context)
 }
 

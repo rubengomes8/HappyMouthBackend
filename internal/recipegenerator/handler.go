@@ -5,6 +5,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	corejwt "github.com/rubengomes8/HappyCore/pkg/jwt"
+)
+
+const (
+	apiSecret          = "86448213-7373-47B4-B3A2-55E4D8F1B987" // TODO: unsafe here
+	tokenLifespanHours = 8760
 )
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
@@ -13,12 +19,26 @@ type service interface {
 }
 
 type RecipesHandler struct {
-	svc service
+	svc      service
+	tokenSvc corejwt.TokenService
 }
 
 func NewRecipesHandler(svc service) RecipesHandler {
 	return RecipesHandler{
-		svc: svc,
+		svc:      svc,
+		tokenSvc: corejwt.NewTokenService(apiSecret, tokenLifespanHours),
+	}
+}
+
+func (h RecipesHandler) JWTAuthMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		err := h.tokenSvc.ValidateToken(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			ctx.Abort()
+			return
+		}
+		ctx.Next()
 	}
 }
 

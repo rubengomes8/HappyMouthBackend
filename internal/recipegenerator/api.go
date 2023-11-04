@@ -13,6 +13,7 @@ const (
 )
 
 type Handler interface {
+	JWTAuthMiddleware() gin.HandlerFunc
 	CreateRecipe(ctx *gin.Context)
 }
 

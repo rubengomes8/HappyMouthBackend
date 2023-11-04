@@ -14,17 +14,26 @@ func SetAPIRoutes(
 ) *gin.Engine {
 
 	r := gin.Default()
-	v1 := r.Group("/v1")
+
+	// AUTH
+	rAuthV1 := r.Group("/v1/auth")
 	{
-		// AUTH
-		v1.POST("/auth/register", auth.Register)
-		v1.POST("/auth/login", auth.Login)
+		rAuthV1.POST("/register", auth.Register)
+		rAuthV1.POST("/login", auth.Login)
+	}
 
-		// INGREDIENTS
-		v1.GET("/ingredients", ingredients.GetIngredients)
+	// INGREDIENTS
+	v1Ingredients := r.Group("/v1/ingredients")
+	{
+		v1Ingredients.Use(ingredients.JWTAuthMiddleware())
+		v1Ingredients.GET("/", ingredients.GetIngredients)
+	}
 
-		// RECIPES
-		v1.POST("/recipes", recipes.CreateRecipe)
+	// RECIPES
+	v1Recipes := r.Group("/v1/recipes")
+	{
+		v1Recipes.Use(recipes.JWTAuthMiddleware())
+		v1Recipes.POST("/", recipes.CreateRecipe)
 	}
 
 	return r
