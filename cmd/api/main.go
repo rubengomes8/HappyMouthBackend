@@ -9,7 +9,7 @@ import (
 	apiroutes "github.com/rubengomes8/HappyMouthBackend/internal"
 	"github.com/rubengomes8/HappyMouthBackend/internal/auth"
 	"github.com/rubengomes8/HappyMouthBackend/internal/ingredients"
-	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipes"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/kvstore"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 )
@@ -59,7 +59,7 @@ func main() {
 	ingredientsAPI := ingredients.NewAPI(dynamoDBClient)
 
 	// RECIPE GENERATOR - GIN + REDIS
-	recipesAPI := recipegenerator.NewAPI(cache, producer)
+	recipesAPI := recipes.NewAPI(cache, producer)
 
 	// AUTH - GIN + PGSQL GORM
 	authAPI := auth.NewAPI(postgresDB)

@@ -1,4 +1,4 @@
-package recipegenerator
+package recipes
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"github.com/IBM/sarama"
 	"github.com/go-resty/resty/v2"
 
-	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator/examples"
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipes/examples"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
 )
 

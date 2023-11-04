@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rubengomes8/HappyMouthBackend/internal/auth"
 	"github.com/rubengomes8/HappyMouthBackend/internal/ingredients"
-	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipes"
 )
 
 func SetAPIRoutes(
 	auth auth.Handler,
-	recipes recipegenerator.Handler,
+	recipes recipes.Handler,
 	ingredients ingredients.Handler,
 ) *gin.Engine {
 

@@ -1,4 +1,4 @@
-package recipegenerator
+package recipes
 
 import (
 	"github.com/IBM/sarama"

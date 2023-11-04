@@ -1,4 +1,4 @@
-package recipegenerator
+package recipes
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator/examples"
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipes/examples"
 	"github.com/stretchr/testify/assert"
 )
 

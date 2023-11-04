@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rubengomes8/HappyMouthBackend/internal/recipegenerator"
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipes"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
 )
 
@@ -69,7 +69,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var fileRecipe recipegenerator.Recipe
+	var fileRecipe recipes.Recipe
 	for recipeKey, filePath := range mapRecipeKeyToFilePath {
 		if recipeKey == "recipe_key" {
 			continue
