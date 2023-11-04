@@ -26,14 +26,15 @@ func SetAPIRoutes(
 	v1Ingredients := r.Group("/v1/ingredients")
 	{
 		v1Ingredients.Use(ingredients.JWTAuthMiddleware())
-		v1Ingredients.GET("/", ingredients.GetIngredients)
+		v1Ingredients.GET("", ingredients.GetIngredients)
 	}
 
 	// RECIPES
 	v1Recipes := r.Group("/v1/recipes")
 	{
 		v1Recipes.Use(recipes.JWTAuthMiddleware())
-		v1Recipes.POST("/", recipes.CreateRecipe)
+		v1Recipes.POST("", recipes.CreateRecipe)
+		v1Recipes.GET("", recipes.GetRecipes)
 	}
 
 	return r

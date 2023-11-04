@@ -65,3 +65,7 @@ func (h RecipesHandler) CreateRecipe(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, recipe)
 	ctx.Writer.Flush()
 }
+
+func (h RecipesHandler) GetRecipes(ctx *gin.Context) {
+	panic("implement me")
+}
