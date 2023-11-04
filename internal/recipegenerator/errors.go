@@ -3,6 +3,7 @@ package recipegenerator
 import "errors"
 
 var (
-	ErrRequiredIncludeIngredients = errors.New("happymouthbackend.error.including_ingredients_required")
-	ErrConflictingIngredients     = errors.New("happymouthbackend.error.conflicting_ingredients")
+	ErrRequiredIncludeIngredients = errors.New("happymouthbackend.recipes.error.including_ingredients_required")
+	ErrConflictingIngredients     = errors.New("happymouthbackend.recipes.error.conflicting_ingredients")
+	ErrInvalidUserID              = errors.New("happymouthbackend.recipes.error.invalid_user_id")
 )

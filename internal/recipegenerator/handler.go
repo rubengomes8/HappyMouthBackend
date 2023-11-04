@@ -2,6 +2,7 @@ package recipegenerator
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -67,5 +68,14 @@ func (h RecipesHandler) CreateRecipe(ctx *gin.Context) {
 }
 
 func (h RecipesHandler) GetRecipes(ctx *gin.Context) {
+
+	userID, err := getStringQueryParam(ctx, "user-id")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println(userID)
+
 	panic("implement me")
 }

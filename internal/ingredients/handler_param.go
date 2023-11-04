@@ -7,7 +7,7 @@ import (
 )
 
 func getBoolQueryParamWithDefault(ctx *gin.Context, queryParam string, defaultValue bool) (bool, error) {
-	strValue := ctx.Query("sort-by-name")
+	strValue := ctx.Query(queryParam)
 	if strValue == "" {
 		return defaultValue, nil
 	}
