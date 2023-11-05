@@ -30,8 +30,9 @@ var (
 )
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
-type repo interface {
+type cache interface {
 	GetRecipeByKey(ctx context.Context, key string) (Recipe, error)
+	GetRecipesByKeys(ctx context.Context, recipeKey string) ([]Recipe, error)
 	StoreRecipe(ctx context.Context, key string, recipe Recipe) error
 }
 
@@ -40,21 +41,21 @@ type Service struct {
 	openAIAPIKey      string
 	openAIClient      *resty.Client
 	producer          sarama.SyncProducer
-	repo              repo
+	cache             cache
 }
 
 func NewService(
 	openAIEndpoint,
 	openAIKey string,
 	producer sarama.SyncProducer,
-	repo repo,
+	cache cache,
 ) Service {
 	return Service{
 		openAIAPIEndpoint: openAIEndpoint,
 		openAIAPIKey:      openAIKey,
 		openAIClient:      resty.New(),
 		producer:          producer,
-		repo:              repo,
+		cache:             cache,
 	}
 }
 
@@ -62,7 +63,7 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 
 	recipeKey := getRecipeKey(recipeRequest.IncludeIngredients, recipeRequest.ExcludeIngredients)
 
-	recipe, err := s.repo.GetRecipeByKey(ctx, recipeKey)
+	recipe, err := s.cache.GetRecipeByKey(ctx, recipeKey)
 	if err != nil {
 		return Recipe{}, err
 	}
@@ -113,8 +114,8 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 		return Recipe{}, err
 	}
 
-	// TODO: add recipeKey to user.recipes
-	err = s.repo.StoreRecipe(ctx, recipeKey, parsedRecipe)
+	// TODO: add recipeKey to user_recipes
+	err = s.cache.StoreRecipe(ctx, recipeKey, parsedRecipe)
 	if err != nil {
 		return Recipe{}, err
 	}

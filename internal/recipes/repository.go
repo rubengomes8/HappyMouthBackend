@@ -25,6 +25,10 @@ func (r repository) GetRecipeByKey(ctx context.Context, key string) (Recipe, err
 	return recipe, nil
 }
 
+func (r repository) GetRecipesByKeys(ctx context.Context, recipeKey string) ([]Recipe, error) {
+	panic("implement me")
+}
+
 func (r repository) StoreRecipe(ctx context.Context, key string, recipe Recipe) error {
 	return r.cache.Set(ctx, key, recipe, 0 /* ttl */)
 }

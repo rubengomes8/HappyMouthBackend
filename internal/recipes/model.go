@@ -73,3 +73,9 @@ func getRecipeKey(
 	excludeKey := strings.Join(uniqueExcludeSortedIngredients, ",")
 	return fmt.Sprintf("%s|%s", includeKey, excludeKey)
 }
+
+type UserRecipe struct {
+	UserRecipeID int
+	UserID       int
+	RecipeKey    string
+}
