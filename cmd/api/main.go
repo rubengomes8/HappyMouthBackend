@@ -59,7 +59,7 @@ func main() {
 	ingredientsAPI := ingredients.NewAPI(dynamoDBClient)
 
 	// RECIPE GENERATOR - GIN + REDIS
-	recipesAPI := recipes.NewAPI(cache, producer)
+	recipesAPI := recipes.NewAPI(cache, producer, postgresDB)
 
 	// AUTH - GIN + PGSQL GORM
 	authAPI := auth.NewAPI(postgresDB)

@@ -30,10 +30,15 @@ var (
 )
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
-type cache interface {
+type iCache interface {
 	GetRecipeByKey(ctx context.Context, key string) (Recipe, error)
-	GetRecipesByKeys(ctx context.Context, recipeKey string) ([]Recipe, error)
+	GetRecipesByKeys(ctx context.Context, recipeKeys []string) ([]Recipe, error)
 	StoreRecipe(ctx context.Context, key string, recipe Recipe) error
+}
+
+//go:generate go-mockgen -f ./ -i service -d ./mocks/
+type userRepo interface {
+	GetUserRecipes(ctx context.Context, userID int) ([]UserRecipe, error)
 }
 
 type Service struct {
@@ -41,14 +46,16 @@ type Service struct {
 	openAIAPIKey      string
 	openAIClient      *resty.Client
 	producer          sarama.SyncProducer
-	cache             cache
+	cache             iCache
+	userRepo          userRepo
 }
 
 func NewService(
 	openAIEndpoint,
 	openAIKey string,
 	producer sarama.SyncProducer,
-	cache cache,
+	cache iCache,
+	userRepo userRepo,
 ) Service {
 	return Service{
 		openAIAPIEndpoint: openAIEndpoint,
@@ -56,6 +63,7 @@ func NewService(
 		openAIClient:      resty.New(),
 		producer:          producer,
 		cache:             cache,
+		userRepo:          userRepo,
 	}
 }
 
@@ -124,7 +132,23 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 }
 
 func (s Service) GetRecipes(ctx context.Context, userID int) ([]Recipe, error) {
-	panic("implement me")
+
+	userRecipes, err := s.userRepo.GetUserRecipes(ctx, userID)
+	if err != nil {
+		return []Recipe{}, err
+	}
+
+	var recipeKeys []string
+	for i := range userRecipes {
+		recipeKeys = append(recipeKeys, userRecipes[i].RecipeKey)
+	}
+
+	recipes, err := s.cache.GetRecipesByKeys(ctx, recipeKeys)
+	if err != nil {
+		return []Recipe{}, err
+	}
+
+	return recipes, nil
 }
 
 func createOpenAPIQuestion(includeIngredients, excludeIngredients []string) string {

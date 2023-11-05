@@ -4,6 +4,7 @@ import (
 	"github.com/IBM/sarama"
 	"github.com/gin-gonic/gin"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/redis"
+	"gorm.io/gorm"
 )
 
 const (
@@ -22,9 +23,10 @@ type API struct {
 	Handler Handler
 }
 
-func NewAPI(cache *redis.Cache, producer sarama.SyncProducer) API {
-	repo := NewRepository(cache)
-	svc := NewService(openAIEndpoint, openAIKey, producer, repo)
+func NewAPI(redis *redis.Cache, producer sarama.SyncProducer, db *gorm.DB) API {
+	cache := NewCache(redis)
+	userRepo := NewUserRepository(db)
+	svc := NewService(openAIEndpoint, openAIKey, producer, cache, userRepo)
 	h := NewRecipesHandler(svc)
 	return API{
 		Handler: h,
