@@ -31,14 +31,15 @@ var (
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type iCache interface {
-	GetRecipeByKey(ctx context.Context, key string) (Recipe, error)
-	GetRecipesByKeys(ctx context.Context, recipeKeys []string) ([]Recipe, error)
-	StoreRecipe(ctx context.Context, key string, recipe Recipe) error
+	GetRecipeByKey(context.Context, string) (Recipe, error)
+	GetRecipesByKeys(context.Context, []string) ([]Recipe, error)
+	StoreRecipe(context.Context, string, Recipe) error
 }
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type userRepo interface {
-	GetUserRecipes(ctx context.Context, userID int) ([]UserRecipe, error)
+	GetUserRecipes(context.Context, int) ([]UserRecipe, error)
+	CreateUserRecipe(context.Context, UserRecipe) error
 }
 
 type Service struct {
@@ -67,7 +68,7 @@ func NewService(
 	}
 }
 
-func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions) (Recipe, error) {
+func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions, userID int) (Recipe, error) {
 
 	recipeKey := getRecipeKey(recipeRequest.IncludeIngredients, recipeRequest.ExcludeIngredients)
 
@@ -116,14 +117,24 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 		}
 	}
 
-	// fmt.Println("content")
 	parsedRecipe, err := parseRecipeString(recipeStr, recipeKey)
 	if err != nil {
 		return Recipe{}, err
 	}
 
-	// TODO: add recipeKey to user_recipes
 	err = s.cache.StoreRecipe(ctx, recipeKey, parsedRecipe)
+	if err != nil {
+		return Recipe{}, err
+	}
+
+	now := time.Now().UTC()
+	err = s.userRepo.CreateUserRecipe(ctx, UserRecipe{
+		UserRecipeID: 0,
+		UserID:       userID,
+		RecipeKey:    recipeKey,
+		CreatedAt:    &now,
+		UpdatedAt:    &now,
+	})
 	if err != nil {
 		return Recipe{}, err
 	}
@@ -131,7 +142,7 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 	return parsedRecipe, nil
 }
 
-func (s Service) GetRecipes(ctx context.Context, userID int) ([]Recipe, error) {
+func (s Service) GetRecipesByUser(ctx context.Context, userID int) ([]Recipe, error) {
 
 	userRecipes, err := s.userRepo.GetUserRecipes(ctx, userID)
 	if err != nil {

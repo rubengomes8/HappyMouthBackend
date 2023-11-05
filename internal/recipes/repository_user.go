@@ -18,7 +18,23 @@ func NewUserRepository(db *gorm.DB) userRepository {
 }
 
 func (r userRepository) GetUserRecipes(ctx context.Context, userID int) ([]UserRecipe, error) {
-	panic("implement me")
+	var userRecipes []UserRecipe
+	err := r.db.WithContext(ctx).
+		Model(UserRecipe{}).
+		Where("user_id = ?", userID).
+		Scan(&userRecipes).
+		Error
+	if err != nil {
+		return []UserRecipe{}, err
+	}
+	return userRecipes, nil
+
+}
+
+func (r userRepository) CreateUserRecipe(ctx context.Context, userRecipe UserRecipe) error {
+	return r.db.WithContext(ctx).
+		Create(&userRecipe).
+		Error
 }
 
 func (r userRepository) GetUserByUsername(ctx context.Context, username string) (users.User, error) {

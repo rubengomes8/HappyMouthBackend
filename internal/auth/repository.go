@@ -5,7 +5,6 @@ import (
 
 	"github.com/rubengomes8/HappyMouthBackend/internal/users"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type Repository struct {
@@ -19,14 +18,9 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (r Repository) CreateUser(ctx context.Context, user users.User) error {
-	err := r.db.WithContext(ctx).
-		Clauses(clause.Returning{}).
+	return r.db.WithContext(ctx).
 		Create(&user).
 		Error
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (r Repository) GetUserByUsername(ctx context.Context, username string) (users.User, error) {

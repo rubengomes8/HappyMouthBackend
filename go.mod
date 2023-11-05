@@ -1,6 +1,6 @@
 module github.com/rubengomes8/HappyMouthBackend
 
-go 1.19
+go 1.21.0
 
 require (
 	github.com/IBM/sarama v1.41.3
@@ -13,7 +13,7 @@ require (
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/redis/go-redis/v9 v9.2.1
-	github.com/rubengomes8/HappyCore v0.0.0-20231029122607-ade1250aca27
+	github.com/rubengomes8/HappyCore v0.0.0-20231105220334-938ca4581610
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli v1.22.14
 	github.com/wagslane/go-password-validator v0.3.0

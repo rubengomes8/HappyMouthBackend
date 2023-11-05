@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rubengomes8/HappyMouthBackend/internal/users"
@@ -52,10 +53,14 @@ func (h AuthHandler) Register(ctx *gin.Context) {
 		return
 	}
 
+	now := time.Now().UTC()
 	err = h.svc.RegisterUser(ctx, users.User{
-		Username: input.Username,
-		Passhash: hashedPassword,
-		Email:    input.Email,
+		ID:        0,
+		Username:  input.Username,
+		Passhash:  hashedPassword,
+		Email:     input.Email,
+		CreatedAt: &now,
+		UpdatedAt: &now,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

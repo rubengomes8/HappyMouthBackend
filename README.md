@@ -9,6 +9,6 @@
 ## TODOs
 - [x] Add time.Sleep in mocked response
 - [x] Add ingredients database
-- [ ] Add authentication using Cognito
-- [ ] Add users database
-- [ ] Use MemCached or Redis to store the GPT Recipes instead of Kafka?
+- [x] Add authentication
+- [x] Add users database
+- [x] Use ~MemCached or~ Redis to store the GPT Recipes instead of Kafka

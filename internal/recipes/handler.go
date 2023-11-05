@@ -2,7 +2,6 @@ package recipes
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,8 +15,8 @@ const (
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type service interface {
-	AskRecipe(context.Context, RecipeDefinitions) (Recipe, error)
-	GetRecipes(context.Context, int) ([]Recipe, error)
+	AskRecipe(context.Context, RecipeDefinitions, int) (Recipe, error)
+	GetRecipesByUser(context.Context, int) ([]Recipe, error)
 }
 
 type RecipesHandler struct {
@@ -58,7 +57,12 @@ func (h RecipesHandler) CreateRecipe(ctx *gin.Context) {
 		return
 	}
 
-	recipe, err := h.svc.AskRecipe(ctx, recipeRequest)
+	userID, err := h.tokenSvc.ExtractClaimSub(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	recipe, err := h.svc.AskRecipe(ctx, recipeRequest, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -70,19 +74,17 @@ func (h RecipesHandler) CreateRecipe(ctx *gin.Context) {
 
 func (h RecipesHandler) GetRecipes(ctx *gin.Context) {
 
-	userID, err := getIntQueryParam(ctx, "user-id")
+	userID, err := h.tokenSvc.ExtractClaimSub(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
 	}
 
-	recipes, err := h.svc.GetRecipes(ctx, userID)
+	recipes, err := h.svc.GetRecipesByUser(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	fmt.Println(recipes)
-
-	panic("implement me")
+	ctx.JSON(http.StatusOK, recipes)
+	ctx.Writer.Flush()
 }
