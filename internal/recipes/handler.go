@@ -17,6 +17,7 @@ const (
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type service interface {
 	AskRecipe(context.Context, RecipeDefinitions) (Recipe, error)
+	GetRecipes(context.Context, int) ([]Recipe, error)
 }
 
 type RecipesHandler struct {
@@ -69,13 +70,19 @@ func (h RecipesHandler) CreateRecipe(ctx *gin.Context) {
 
 func (h RecipesHandler) GetRecipes(ctx *gin.Context) {
 
-	userID, err := getStringQueryParam(ctx, "user-id")
+	userID, err := getIntQueryParam(ctx, "user-id")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	fmt.Println(userID)
+	recipes, err := h.svc.GetRecipes(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println(recipes)
 
 	panic("implement me")
 }

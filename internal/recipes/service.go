@@ -122,6 +122,10 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions)
 	return parsedRecipe, nil
 }
 
+func (s Service) GetRecipes(ctx context.Context, userID int) ([]Recipe, error) {
+	panic("implement me")
+}
+
 func createOpenAPIQuestion(includeIngredients, excludeIngredients []string) string {
 
 	var question string
