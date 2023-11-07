@@ -1,0 +1,149 @@
+definitions:
+  github.com_rubengomes8_HappyMouthBackend_internal_recipes.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  github.com_rubengomes8_HappyMouthBackend_internal_recipes.Recipe:
+    properties:
+      calories:
+        type: number
+      created_at:
+        type: string
+      definitions:
+        $ref: '#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.RecipeDefinitions'
+      deleted_at:
+        type: string
+      id:
+        type: string
+      ingredients:
+        items:
+          type: string
+        type: array
+      instructions:
+        items:
+          type: string
+        type: array
+      is_favorite:
+        type: boolean
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github.com_rubengomes8_HappyMouthBackend_internal_recipes.RecipeDefinitions:
+    properties:
+      exclude_ingredients:
+        items:
+          type: string
+        type: array
+      include_ingredients:
+        items:
+          type: string
+        type: array
+    type: object
+  internal_recipes.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  internal_recipes.Recipe:
+    properties:
+      calories:
+        type: number
+      created_at:
+        type: string
+      definitions:
+        $ref: '#/definitions/internal_recipes.RecipeDefinitions'
+      deleted_at:
+        type: string
+      id:
+        type: string
+      ingredients:
+        items:
+          type: string
+        type: array
+      instructions:
+        items:
+          type: string
+        type: array
+      is_favorite:
+        type: boolean
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_recipes.RecipeDefinitions:
+    properties:
+      exclude_ingredients:
+        items:
+          type: string
+        type: array
+      include_ingredients:
+        items:
+          type: string
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/recipes:
+    get:
+      consumes:
+      - application/json
+      description: Gets a list of recipes based on the provided filter
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_recipes.Recipe'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_recipes.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_recipes.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Gets a list of recipes based on the provided filters.
+      tags:
+      - Recipes
+    post:
+      consumes:
+      - application/json
+      description: Generates a new recipe using OpenAI if it is a new set of parameters.
+      parameters:
+      - description: Generate recipe request.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_recipes.RecipeDefinitions'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_recipes.Recipe'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_recipes.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_recipes.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Generates a new recipe using OpenAI if it is a new set of parameters.
+      tags:
+      - Recipes
+swagger: "2.0"

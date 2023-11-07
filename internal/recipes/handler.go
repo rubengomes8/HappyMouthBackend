@@ -27,7 +27,7 @@ type RecipesHandler struct {
 func NewRecipesHandler(svc service) RecipesHandler {
 	return RecipesHandler{
 		svc:      svc,
-		tokenSvc: corejwt.NewTokenService(apiSecret, tokenLifespanHours),
+		tokenSvc: corejwt.NewTokenService(apiSecret, 0),
 	}
 }
 
@@ -43,6 +43,19 @@ func (h RecipesHandler) JWTAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+// CreateRecipe is used to generate a new recipe.
+// ShowEntity godoc
+// @tags Recipes
+// @Summary Generates a new recipe using OpenAI if it is a new set of parameters.
+// @Description Generates a new recipe using OpenAI if it is a new set of parameters.
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param body body RecipeDefinitions true "Generate recipe request."
+// @Success 200 {object} Recipe
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /v1/recipes [post]
 func (h RecipesHandler) CreateRecipe(ctx *gin.Context) {
 
 	var recipeRequest RecipeDefinitions
@@ -72,6 +85,18 @@ func (h RecipesHandler) CreateRecipe(ctx *gin.Context) {
 	ctx.Writer.Flush()
 }
 
+// GetRecipes is used to get a list of recipes.
+// ShowEntity godoc
+// @tags Recipes
+// @Summary Gets a list of recipes based on the provided filters.
+// @Description Gets a list of recipes based on the provided filter
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} []Recipe
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /v1/recipes [get]
 func (h RecipesHandler) GetRecipes(ctx *gin.Context) {
 
 	userID, err := h.tokenSvc.ExtractClaimSub(ctx)

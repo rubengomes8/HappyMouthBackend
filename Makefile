@@ -1,3 +1,11 @@
+SWAG_PARAMS = init --parseInternal --parseDependency --parseDepth 3
+SWAG_EXCLUDE = --exclude ./db,./docker
+SWAG_EXCLUDE_API = $(SWAG_EXCLUDE)
+
+# SWAGGER #
+swagger:
+	swag $(SWAG_PARAMS) $(SWAG_EXCLUDE_API) -o ./docs -g ./cmd/api/main.go
+
 # GO DEPS #
 deps:
 	go mod tidy

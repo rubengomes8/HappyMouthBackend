@@ -26,7 +26,7 @@ type IngredientsHandler struct {
 func NewIngredientsHandler(svc service) IngredientsHandler {
 	return IngredientsHandler{
 		svc:      svc,
-		tokenSvc: corejwt.NewTokenService(apiSecret, tokenLifespanHours),
+		tokenSvc: corejwt.NewTokenService(apiSecret, 0),
 	}
 }
 

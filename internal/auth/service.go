@@ -14,8 +14,7 @@ type repo interface {
 }
 
 const (
-	apiSecret          = "86448213-7373-47B4-B3A2-55E4D8F1B987" // TODO: unsafe here
-	tokenLifespanHours = 8760
+	apiSecret = "86448213-7373-47B4-B3A2-55E4D8F1B987" // TODO: unsafe here
 )
 
 type Service struct {
@@ -25,7 +24,7 @@ type Service struct {
 
 func NewService(repo repo) Service {
 	return Service{
-		tokenSvc: corejwt.NewTokenService(apiSecret, tokenLifespanHours),
+		tokenSvc: corejwt.NewTokenService(apiSecret, 0),
 		repo:     repo,
 	}
 }

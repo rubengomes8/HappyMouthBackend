@@ -82,3 +82,7 @@ type UserRecipe struct {
 	UpdatedAt    *time.Time `json:"updated_at,omitempty" gorm:"updated_at"`
 	DeletedAt    *time.Time `json:"deleted_at,omitempty" gorm:"deleted_at"`
 }
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
