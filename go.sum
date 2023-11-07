@@ -190,8 +190,8 @@ github.com/redis/go-redis/v9 v9.2.1 h1:WlYJg71ODF0dVspZZCpYmoF1+U1Jjk9Rwd7pq6Qml
 github.com/redis/go-redis/v9 v9.2.1/go.mod h1:hdY0cQFCN4fnSYT6TkisLufl/4W5UIXyv0b/CLO2V2M=
 github.com/rogpeppe/go-internal v1.11.0 h1:cWPaGQEPrBb5/AsnsZesgZZ9yb1OQ+GOISoDNXVBh4M=
 github.com/rogpeppe/go-internal v1.11.0/go.mod h1:ddIwULY96R17DhadqLgMfk9H9tvdUzkipdSkR5nkCZA=
-github.com/rubengomes8/HappyCore v0.0.0-20231105220334-938ca4581610 h1:ZCMaIZVmbRDS3+1uPMx/InBrbEKKa82NcUsrHe34l5o=
-github.com/rubengomes8/HappyCore v0.0.0-20231105220334-938ca4581610/go.mod h1:QJCHC0otEymI+IsLIXGNT+rJWYvwAnI1uz61gCjIlBQ=
+github.com/rubengomes8/HappyCore v0.0.0-20231105223751-dce78f53b75f h1:Ymls6DfUqMIXV+If+EJe9ZPtwNjhAfMBcb4dMQ/9uck=
+github.com/rubengomes8/HappyCore v0.0.0-20231105223751-dce78f53b75f/go.mod h1:QJCHC0otEymI+IsLIXGNT+rJWYvwAnI1uz61gCjIlBQ=
 github.com/russross/blackfriday/v2 v2.1.0 h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf35Ld67mk=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/shopspring/decimal v1.3.1 h1:2Usl1nmF/WZucqkFZhnfFYxxxu8LG21F6nPQBE5gKV8=
