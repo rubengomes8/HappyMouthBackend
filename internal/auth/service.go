@@ -50,5 +50,15 @@ func (s Service) LoginUser(ctx context.Context, req LoginInput) (string, error) 
 }
 
 func (s Service) RegisterUser(ctx context.Context, user users.User) error {
+
+	dbUser, err := s.repo.GetUserByUsername(ctx, user.Username)
+	if err != nil {
+		return err
+	}
+
+	if dbUser.Username != "" {
+		return ErrUsernameAlreadyExists
+	}
+
 	return s.repo.CreateUser(ctx, user)
 }
