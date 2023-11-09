@@ -24,7 +24,7 @@ type Service struct {
 
 func NewService(repo repo) Service {
 	return Service{
-		tokenSvc: corejwt.NewTokenService(apiSecret, 0),
+		tokenSvc: corejwt.NewTokenService(apiSecret, 99999 /* tokenLifespanHours */),
 		repo:     repo,
 	}
 }
