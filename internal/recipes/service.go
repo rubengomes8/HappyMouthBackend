@@ -11,7 +11,6 @@ import (
 
 	"github.com/IBM/sarama"
 	"github.com/go-resty/resty/v2"
-	"github.com/gofrs/uuid"
 
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipes/examples"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
@@ -130,11 +129,10 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions,
 
 	now := time.Now().UTC()
 	err = s.userRepo.CreateUserRecipe(ctx, UserRecipe{
-		UserRecipeID: uuid.Must(uuid.NewV4()),
-		UserID:       userID,
-		RecipeKey:    recipeKey,
-		CreatedAt:    &now,
-		UpdatedAt:    &now,
+		UserID:    userID,
+		RecipeKey: recipeKey,
+		CreatedAt: &now,
+		UpdatedAt: &now,
 	})
 	if err != nil {
 		return Recipe{}, err

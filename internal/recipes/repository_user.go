@@ -22,6 +22,7 @@ func (r userRepository) GetUserRecipes(ctx context.Context, userID int) ([]UserR
 	err := r.db.WithContext(ctx).
 		Model(UserRecipe{}).
 		Where("user_id = ?", userID).
+		Where("deleted_at IS NULL").
 		Scan(&userRecipes).
 		Error
 	if err != nil {
@@ -33,7 +34,7 @@ func (r userRepository) GetUserRecipes(ctx context.Context, userID int) ([]UserR
 
 func (r userRepository) CreateUserRecipe(ctx context.Context, userRecipe UserRecipe) error {
 	return r.db.WithContext(ctx).
-		Create(&userRecipe).
+		Create(userRecipe).
 		Error
 }
 
@@ -42,6 +43,7 @@ func (r userRepository) GetUserByUsername(ctx context.Context, username string) 
 	err := r.db.WithContext(ctx).
 		Model(users.User{}).
 		Where("username = ?", username).
+		Where("deleted_at IS NULL").
 		First(&user).
 		Error
 	if err != nil {

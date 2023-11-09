@@ -10,7 +10,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.23.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-resty/resty/v2 v2.10.0
-	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/redis/go-redis/v9 v9.2.1
@@ -68,6 +67,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/snappy v0.0.4 // indirect

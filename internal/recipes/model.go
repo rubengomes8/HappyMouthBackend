@@ -5,8 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gofrs/uuid"
-
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
 )
 
@@ -77,12 +75,11 @@ func getRecipeKey(
 }
 
 type UserRecipe struct {
-	UserRecipeID uuid.UUID  `json:"user_recipe_id,omitempty" gorm:"user_recipe_id"`
-	UserID       int        `json:"user_id,omitempty" gorm:"user_id"`
-	RecipeKey    string     `json:"recipe_key,omitempty" gorm:"recipe_key"`
-	CreatedAt    *time.Time `json:"created_at,omitempty" gorm:"created_at"`
-	UpdatedAt    *time.Time `json:"updated_at,omitempty" gorm:"updated_at"`
-	DeletedAt    *time.Time `json:"deleted_at,omitempty" gorm:"deleted_at"`
+	UserID    int        `json:"user_id,omitempty" gorm:"user_id"`
+	RecipeKey string     `json:"recipe_key,omitempty" gorm:"recipe_key"`
+	CreatedAt *time.Time `json:"created_at,omitempty" gorm:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty" gorm:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty" gorm:"deleted_at"`
 }
 
 type ErrorResponse struct {
