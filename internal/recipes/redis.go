@@ -26,7 +26,7 @@ func (c cache) GetRecipeByKey(ctx context.Context, key string) (Recipe, error) {
 }
 
 func (c cache) GetRecipesByKeys(ctx context.Context, recipeKeys []string) ([]Recipe, error) {
-	var recipes []Recipe
+	recipes := []Recipe{}
 	// TODO: should be nice to do a single redis call, instead of N.
 	for _, recipeKey := range recipeKeys {
 		recipe, err := c.GetRecipeByKey(ctx, recipeKey)

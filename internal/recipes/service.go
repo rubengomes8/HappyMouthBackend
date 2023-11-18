@@ -150,13 +150,23 @@ func (s Service) GetRecipesByUser(ctx context.Context, userID int) ([]Recipe, er
 	}
 
 	var recipeKeys []string
+	favoriteUserRecipes := map[string]struct{}{}
 	for i := range userRecipes {
+		if userRecipes[i].IsFavorite {
+			favoriteUserRecipes[userRecipes[i].RecipeKey] = struct{}{}
+		}
 		recipeKeys = append(recipeKeys, userRecipes[i].RecipeKey)
 	}
 
 	recipes, err := s.cache.GetRecipesByKeys(ctx, recipeKeys)
 	if err != nil {
 		return []Recipe{}, err
+	}
+
+	for i := range recipes {
+		if _, ok := favoriteUserRecipes[recipes[i].ID]; ok {
+			recipes[i].IsFavorite = true
+		}
 	}
 
 	return recipes, nil
