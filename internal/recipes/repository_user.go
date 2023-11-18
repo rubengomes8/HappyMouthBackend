@@ -23,6 +23,7 @@ func (r userRepository) GetUserRecipes(ctx context.Context, userID int) ([]UserR
 		Model(UserRecipe{}).
 		Where("user_id = ?", userID).
 		Where("deleted_at IS NULL").
+		Order("recipe_key, is_favorite").
 		Scan(&userRecipes).
 		Error
 	if err != nil {
@@ -53,5 +54,10 @@ func (r userRepository) GetUserByUsername(ctx context.Context, username string) 
 }
 
 func (r userRepository) UpdateUserRecipeFavorite(ctx context.Context, userID int, recipeKey string, isFavorite bool) error {
-	panic("implement me")
+	return r.db.WithContext(ctx).
+		Table("user_recipes").
+		Where("user_id = ?", userID).
+		Where("recipe_key = ?", recipeKey).
+		Update("is_favorite", isFavorite).
+		Error
 }
