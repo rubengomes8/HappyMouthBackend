@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/rubengomes8/HappyMouthBackend/internal/users"
+	"gorm.io/gorm"
 
 	corejwt "github.com/rubengomes8/HappyCore/pkg/jwt"
 )
@@ -52,7 +53,7 @@ func (s Service) LoginUser(ctx context.Context, req LoginInput) (string, error) 
 func (s Service) RegisterUser(ctx context.Context, user users.User) error {
 
 	dbUser, err := s.repo.GetUserByUsername(ctx, user.Username)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return err
 	}
 

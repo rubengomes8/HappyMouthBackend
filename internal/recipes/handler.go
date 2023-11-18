@@ -15,8 +15,9 @@ const (
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type service interface {
-	AskRecipe(context.Context, RecipeDefinitions, int) (Recipe, error)
-	GetRecipesByUser(context.Context, int) ([]Recipe, error)
+	AskRecipe(ctx context.Context, definitions RecipeDefinitions, userID int) (Recipe, error)
+	GetRecipesByUser(ctx context.Context, userID int) ([]Recipe, error)
+	SetUserRecipeFavorite(ctx context.Context, userID int, recipeKey string, isFavorite bool) error
 }
 
 type RecipesHandler struct {
@@ -111,5 +112,43 @@ func (h RecipesHandler) GetRecipes(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, recipes)
+	ctx.Writer.Flush()
+}
+
+// SetUserRecipeFavorite is used to update the favorite state of a user recipe.
+// ShowEntity godoc
+// @tags Recipes
+// @Summary Updates the favorite state of a user recipe.
+// @Description Updates the favorite state of a user recipe.
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param body body RecipeDefinitions true "Update user recipe favorite request."
+// @Success 204 "No Content"
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /v1/recipes/{id}/favorite [patch]
+func (h RecipesHandler) SetUserRecipeFavorite(ctx *gin.Context) {
+
+	userID, err := h.tokenSvc.ExtractClaimSub(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	recipeKey := ctx.Param("id")
+
+	var req RecipeFavoriteRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.svc.SetUserRecipeFavorite(ctx, userID, recipeKey, req.IsFavorite)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.Writer.WriteHeader(http.StatusNoContent)
 	ctx.Writer.Flush()
 }

@@ -61,6 +61,10 @@ func (r RecipeDefinitions) validate() error {
 	return nil
 }
 
+type RecipeFavoriteRequest struct {
+	IsFavorite bool `json:"is_favorite"`
+}
+
 // key format: includedIngredients|excludedIngredients|timestamp.RFC3339
 // key example: mushroom,tomato|onion|2019-10-12T07:20:50.52Z
 func getRecipeKey(

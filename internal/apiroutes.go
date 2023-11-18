@@ -68,6 +68,7 @@ func SetAPIRoutes(
 		v1Recipes.Use(recipes.JWTAuthMiddleware())
 		v1Recipes.POST("", recipes.CreateRecipe)
 		v1Recipes.GET("", recipes.GetRecipes)
+		v1Recipes.PATCH("/:id/favorite", recipes.SetUserRecipeFavorite)
 	}
 
 	return r

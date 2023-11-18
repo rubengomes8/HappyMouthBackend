@@ -31,15 +31,16 @@ var (
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type iCache interface {
-	GetRecipeByKey(context.Context, string) (Recipe, error)
-	GetRecipesByKeys(context.Context, []string) ([]Recipe, error)
-	StoreRecipe(context.Context, string, Recipe) error
+	GetRecipeByKey(ctx context.Context, recipeKey string) (Recipe, error)
+	GetRecipesByKeys(ctx context.Context, recipeKeys []string) ([]Recipe, error)
+	StoreRecipe(ctx context.Context, recipeKey string, recipe Recipe) error
 }
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type userRepo interface {
-	GetUserRecipes(context.Context, int) ([]UserRecipe, error)
-	CreateUserRecipe(context.Context, UserRecipe) error
+	GetUserRecipes(ctx context.Context, userID int) ([]UserRecipe, error)
+	CreateUserRecipe(ctx context.Context, userRecipe UserRecipe) error
+	UpdateUserRecipeFavorite(ctx context.Context, userID int, recipeKey string, isFavorite bool) error
 }
 
 type Service struct {
@@ -159,6 +160,10 @@ func (s Service) GetRecipesByUser(ctx context.Context, userID int) ([]Recipe, er
 	}
 
 	return recipes, nil
+}
+
+func (s Service) SetUserRecipeFavorite(ctx context.Context, userID int, recipeKey string, isFavorite bool) error {
+	return s.userRepo.UpdateUserRecipeFavorite(ctx, userID, recipeKey, isFavorite)
 }
 
 func createOpenAPIQuestion(includeIngredients, excludeIngredients []string) string {

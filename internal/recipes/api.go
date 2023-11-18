@@ -17,6 +17,7 @@ type Handler interface {
 	JWTAuthMiddleware() gin.HandlerFunc
 	CreateRecipe(ctx *gin.Context)
 	GetRecipes(ctx *gin.Context)
+	SetUserRecipeFavorite(ctx *gin.Context)
 }
 
 type API struct {

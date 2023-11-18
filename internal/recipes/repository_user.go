@@ -51,3 +51,7 @@ func (r userRepository) GetUserByUsername(ctx context.Context, username string) 
 	}
 	return user, nil
 }
+
+func (r userRepository) UpdateUserRecipeFavorite(ctx context.Context, userID int, recipeKey string, isFavorite bool) error {
+	panic("implement me")
+}
