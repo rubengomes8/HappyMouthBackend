@@ -8,3 +8,7 @@ type Ingredient struct {
 type ReqOptions struct {
 	SortByName bool
 }
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}

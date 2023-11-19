@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/IBM/sarama"
+	random "github.com/Pallinder/go-randomdata"
 	"github.com/go-resty/resty/v2"
 
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipes/examples"
@@ -108,7 +109,7 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions,
 
 	} else {
 		time.Sleep(sleepTime * time.Second)
-		recipeStr = examples.Answer
+		recipeStr = fmt.Sprintf(examples.Answer, random.SillyName())
 	}
 
 	if useKafka {

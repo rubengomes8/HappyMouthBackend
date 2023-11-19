@@ -42,6 +42,19 @@ func (h IngredientsHandler) JWTAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+// GetIngredients is used to get the list of available ingredients
+// ShowEntity godoc
+// @tags ingredients
+// @Summary Gets a list of ingredients.
+// @Description Gets a list of ingredients.
+// @Param sort-by-name query bool false "Sort ingredients by name."
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} []Ingredient
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /v1/ingredients [get]
 func (h IngredientsHandler) GetIngredients(ctx *gin.Context) {
 
 	sortByName, err := getBoolQueryParamWithDefault(ctx, "sort-by-name", false)

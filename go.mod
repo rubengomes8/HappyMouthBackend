@@ -4,6 +4,7 @@ go 1.21.0
 
 require (
 	github.com/IBM/sarama v1.41.3
+	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/aws/aws-sdk-go-v2 v1.21.2
 	github.com/aws/aws-sdk-go-v2/config v1.19.1
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.10.43

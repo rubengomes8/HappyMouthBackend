@@ -16,6 +16,57 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/ingredients": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Gets a list of ingredients.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ingredients"
+                ],
+                "summary": "Gets a list of ingredients.",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Sort ingredients by name.",
+                        "name": "sort-by-name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_ingredients.Ingredient"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_ingredients.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_ingredients.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/recipes": {
             "get": {
                 "security": [
@@ -40,20 +91,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_recipes.Recipe"
+                                "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.Recipe"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_recipes.ErrorResponse"
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_recipes.ErrorResponse"
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.ErrorResponse"
                         }
                     }
                 }
@@ -82,7 +133,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_recipes.RecipeDefinitions"
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.RecipeDefinitions"
                         }
                     }
                 ],
@@ -90,19 +141,67 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_recipes.Recipe"
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.Recipe"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_recipes.ErrorResponse"
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_recipes.ErrorResponse"
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/recipes/{id}/favorite": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates the favorite state of a user recipe.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Recipes"
+                ],
+                "summary": "Updates the favorite state of a user recipe.",
+                "parameters": [
+                    {
+                        "description": "Update user recipe favorite request.",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.RecipeDefinitions"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.ErrorResponse"
                         }
                     }
                 }
@@ -110,6 +209,25 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "github.com_rubengomes8_HappyMouthBackend_internal_ingredients.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "github.com_rubengomes8_HappyMouthBackend_internal_ingredients.Ingredient": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "github.com_rubengomes8_HappyMouthBackend_internal_recipes.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -173,6 +291,25 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "internal_ingredients.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_ingredients.Ingredient": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
