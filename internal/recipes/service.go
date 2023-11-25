@@ -124,6 +124,11 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions,
 		return Recipe{}, err
 	}
 
+	parsedRecipe.Definitions = RecipeDefinitions{
+		IncludeIngredients: recipeRequest.IncludeIngredients,
+		ExcludeIngredients: recipeRequest.ExcludeIngredients,
+	}
+
 	err = s.cache.StoreRecipe(ctx, recipeKey, parsedRecipe)
 	if err != nil {
 		return Recipe{}, err
