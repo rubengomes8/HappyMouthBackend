@@ -21,15 +21,18 @@ const (
 type service interface {
 	RegisterUser(ctx context.Context, user users.User) error
 	LoginUser(ctx context.Context, req LoginInput) (string, error)
+	ChangePassword(ctx context.Context, req ChangePasswordRequest) error
 }
 
 type AuthHandler struct {
-	svc service
+	svc      service
+	tokenSvc corejwt.TokenService
 }
 
 func NewAuthHandler(svc service) AuthHandler {
 	return AuthHandler{
-		svc: svc,
+		svc:      svc,
+		tokenSvc: corejwt.NewTokenService(apiSecret, 99999 /* tokenLifespanHours */),
 	}
 }
 
@@ -93,5 +96,23 @@ func (h AuthHandler) Login(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, LoginResponse{Token: token})
+	ctx.Writer.Flush()
+}
+
+func (h AuthHandler) ChangePassword(ctx *gin.Context) {
+
+	var req ChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := h.svc.ChangePassword(ctx, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.Writer.WriteHeader(http.StatusNoContent)
 	ctx.Writer.Flush()
 }

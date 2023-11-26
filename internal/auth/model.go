@@ -11,6 +11,12 @@ type RegisterInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type ChangePasswordRequest struct {
+	Username    string `json:"username" binding:"required"`
+	OldPassword string `json:"old_password" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required"`
+}
+
 type LoginResponse struct {
 	Token string `json:"token,omitempty"`
 }

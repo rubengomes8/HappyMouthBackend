@@ -11,7 +11,9 @@ import (
 
 type repo interface {
 	GetUserByUsername(ctx context.Context, username string) (users.User, error)
+	GetUserByID(ctx context.Context, userID int) (users.User, error)
 	CreateUser(ctx context.Context, user users.User) error
+	UpdatePassword(ctx context.Context, username string, passhash string) error
 }
 
 const (
@@ -62,4 +64,20 @@ func (s Service) RegisterUser(ctx context.Context, user users.User) error {
 	}
 
 	return s.repo.CreateUser(ctx, user)
+}
+
+func (s Service) ChangePassword(ctx context.Context, req ChangePasswordRequest) error {
+	user, err := s.repo.GetUserByUsername(ctx, req.Username)
+	if err != nil {
+		return err
+	}
+	err = corejwt.VerifyPassword(req.OldPassword, user.Passhash)
+	if err != nil {
+		return err
+	}
+	newPassHash, err := corejwt.EncryptPassword(req.NewPassword)
+	if err != nil {
+		return err
+	}
+	return s.repo.UpdatePassword(ctx, req.Username, newPassHash)
 }

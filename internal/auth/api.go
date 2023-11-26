@@ -8,6 +8,7 @@ import (
 type Handler interface {
 	Register(ctx *gin.Context)
 	Login(ctx *gin.Context)
+	ChangePassword(ctx *gin.Context)
 }
 
 type API struct {

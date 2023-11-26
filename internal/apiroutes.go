@@ -53,6 +53,7 @@ func SetAPIRoutes(
 	{
 		rAuthV1.POST("/register", auth.Register)
 		rAuthV1.POST("/login", auth.Login)
+		rAuthV1.PUT("/users/password", auth.ChangePassword)
 	}
 
 	// INGREDIENTS
