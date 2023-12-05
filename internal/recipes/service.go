@@ -13,6 +13,7 @@ import (
 	random "github.com/Pallinder/go-randomdata"
 	"github.com/go-resty/resty/v2"
 
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipes/enums"
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipes/examples"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
 )
@@ -25,7 +26,7 @@ const (
 )
 
 var (
-	includeTemplate      = "Give me a simple recipe that includes the following ingredients: %s."
+	includeTemplate      = "Give me %s that includes the following ingredients: %s."
 	excludeTemplate      = "Also, the recipe cannot have the following ingredients: %s."
 	instructionsTemplate = "I would like to have only 4 sections separated by the pipe character |. Something like the following: name: x | ingredients: y | instructions: w | calories per serving: z. Also, split the list of ingredients by semicolon character ;"
 )
@@ -72,7 +73,10 @@ func NewService(
 
 func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions, userID int) (Recipe, error) {
 
-	recipeKey := getRecipeKey(recipeRequest.IncludeIngredients, recipeRequest.ExcludeIngredients)
+	recipeKey := getRecipeKey(
+		recipeRequest.RecipeType.Type,
+		recipeRequest.IncludeIngredients,
+		recipeRequest.ExcludeIngredients)
 
 	recipe, err := s.cache.GetRecipeByKey(ctx, recipeKey)
 	if err != nil {
@@ -85,6 +89,7 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions,
 	var recipeStr string
 	if askGPT {
 		chatGPTQuestion := createOpenAPIQuestion(
+			recipeRequest.RecipeType.Type,
 			utils.ToLowercaseUniqueSorted(recipeRequest.IncludeIngredients),
 			utils.ToLowercaseUniqueSorted(recipeRequest.ExcludeIngredients))
 		fmt.Println(chatGPTQuestion)
@@ -125,6 +130,7 @@ func (s Service) AskRecipe(ctx context.Context, recipeRequest RecipeDefinitions,
 	}
 
 	parsedRecipe.Definitions = RecipeDefinitions{
+		RecipeType:         recipeRequest.RecipeType,
 		IncludeIngredients: recipeRequest.IncludeIngredients,
 		ExcludeIngredients: recipeRequest.ExcludeIngredients,
 	}
@@ -182,13 +188,20 @@ func (s Service) SetUserRecipeFavorite(ctx context.Context, userID int, recipeKe
 	return s.userRepo.UpdateUserRecipeFavorite(ctx, userID, recipeKey, isFavorite)
 }
 
-func createOpenAPIQuestion(includeIngredients, excludeIngredients []string) string {
+func createOpenAPIQuestion(recipeType enums.RecipeType, includeIngredients, excludeIngredients []string) string {
 
 	var question string
 	var include string
 	if len(includeIngredients) > 0 {
 		include = strings.Join(includeIngredients, ", ")
-		question += fmt.Sprintf(includeTemplate, include)
+
+		var recipeTypeString string
+		if recipeType == enums.Any {
+			recipeTypeString = "any recipe"
+		} else {
+			recipeTypeString = fmt.Sprintf("a simple %s recipe", strings.ToLower(recipeType.String()))
+		}
+		question += fmt.Sprintf(includeTemplate, recipeTypeString, include)
 	}
 
 	var exclude string

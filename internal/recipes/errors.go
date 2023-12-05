@@ -7,4 +7,5 @@ var (
 	ErrConflictingIngredients     = errors.New("happymouthbackend.recipes.error.conflicting_ingredients")
 	ErrRequiredParam              = errors.New("happymouthbackend.recipes.error.required_param")
 	ErrInvalidInt                 = errors.New("happymouthbackend.recipes.error.invalid_int")
+	ErrInvalidRecipeType          = errors.New("happymouthbackend.recipes.error.invalid_type")
 )

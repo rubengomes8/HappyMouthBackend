@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/rubengomes8/HappyMouthBackend/internal/recipes/enums"
 	"github.com/rubengomes8/HappyMouthBackend/pkg/utils"
 )
 
@@ -25,12 +26,22 @@ func (r Recipe) HasTitle() bool {
 	return r.Title != ""
 }
 
+type RecipeType struct {
+	ID   int              `json:"id"`
+	Type enums.RecipeType `json:"type"`
+}
+
 type RecipeDefinitions struct {
-	IncludeIngredients []string `json:"include_ingredients"`
-	ExcludeIngredients []string `json:"exclude_ingredients"`
+	IncludeIngredients []string   `json:"include_ingredients"`
+	ExcludeIngredients []string   `json:"exclude_ingredients"`
+	RecipeType         RecipeType `json:"recipe_type"`
 }
 
 func (r RecipeDefinitions) validate() error {
+
+	if !r.RecipeType.Type.IsARecipeType() {
+		return ErrInvalidRecipeType
+	}
 
 	if len(r.IncludeIngredients) == 0 {
 		return ErrRequiredIncludeIngredients
@@ -65,17 +76,19 @@ type RecipeFavoriteRequest struct {
 	IsFavorite bool `json:"is_favorite"`
 }
 
-// key format: includedIngredients|excludedIngredients|timestamp.RFC3339
-// key example: mushroom,tomato|onion|2019-10-12T07:20:50.52Z
+// key format: type|includedIngredients|excludedIngredients|timestamp.RFC3339
+// key example: salad|mushroom,tomato|onion|2019-10-12T07:20:50.52Z
 func getRecipeKey(
+	recipeType enums.RecipeType,
 	includeIngredients []string,
 	excludeIngredients []string,
 ) string {
+	recipeTypeLower := strings.ToLower(recipeType.String())
 	uniqueIncludeSortedIngredients := utils.ToLowercaseUniqueSorted(includeIngredients)
 	uniqueExcludeSortedIngredients := utils.ToLowercaseUniqueSorted(excludeIngredients)
 	includeKey := strings.Join(uniqueIncludeSortedIngredients, ",")
 	excludeKey := strings.Join(uniqueExcludeSortedIngredients, ",")
-	return fmt.Sprintf("%s|%s", includeKey, excludeKey)
+	return fmt.Sprintf("%s|%s|%s", recipeTypeLower, includeKey, excludeKey)
 }
 
 type UserRecipe struct {
