@@ -197,7 +197,7 @@ func createOpenAPIQuestion(recipeType enums.RecipeType, includeIngredients, excl
 
 		var recipeTypeString string
 		if recipeType == enums.Any {
-			recipeTypeString = "any recipe"
+			recipeTypeString = "a simple recipe"
 		} else {
 			recipeTypeString = fmt.Sprintf("a simple %s recipe", strings.ToLower(recipeType.String()))
 		}
