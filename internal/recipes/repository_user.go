@@ -33,7 +33,7 @@ func (r userRepository) GetUserRecipes(ctx context.Context, userID int) ([]UserR
 
 }
 
-func (r userRepository) CreateUserRecipe(ctx context.Context, userRecipe UserRecipe) error {
+func (r userRepository) StoreUserRecipe(ctx context.Context, userRecipe UserRecipe) error {
 	return r.db.WithContext(ctx).
 		Create(userRecipe).
 		Error
