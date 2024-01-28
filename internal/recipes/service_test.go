@@ -15,7 +15,7 @@ var (
 	splittedByPipe = strings.Split(lowerRecipeStr, "|")
 )
 
-func Test_getRecipeName(t *testing.T) {
+func Test_parseRecipeName(t *testing.T) {
 
 	type args struct {
 		recipeName string
@@ -36,14 +36,14 @@ func Test_getRecipeName(t *testing.T) {
 	for _, tt := range tests {
 		fmt.Println(splittedByPipe[0])
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getRecipeName(tt.args.recipeName); got != tt.want {
+			if got := parseRecipeName(tt.args.recipeName); got != tt.want {
 				t.Errorf("getRecipeName() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_getRecipeCalories(t *testing.T) {
+func Test_parseRecipeCalories(t *testing.T) {
 	type args struct {
 		recipeCalories string
 	}
@@ -62,14 +62,14 @@ func Test_getRecipeCalories(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getRecipeCalories(tt.args.recipeCalories); *got != tt.want {
+			if got := parseRecipeCalories(tt.args.recipeCalories); *got != tt.want {
 				t.Errorf("getRecipeCalories() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_getRecipeIngredients(t *testing.T) {
+func Test_parseRecipeIngredients(t *testing.T) {
 	type args struct {
 		recipeIngredients string
 	}
@@ -94,14 +94,14 @@ func Test_getRecipeIngredients(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getRecipeIngredients(tt.args.recipeIngredients); !reflect.DeepEqual(got, tt.want) {
+			if got := parseRecipeIngredients(tt.args.recipeIngredients); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getRecipeIngredients() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_getRecipeInstructions(t *testing.T) {
+func Test_parseRecipeInstructions(t *testing.T) {
 	type args struct {
 		recipeInstructions string
 	}
@@ -127,7 +127,7 @@ func Test_getRecipeInstructions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getRecipeInstructions(tt.args.recipeInstructions); !reflect.DeepEqual(got, tt.want) {
+			if got := parseRecipeInstructions(tt.args.recipeInstructions); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getRecipeInstructions() = %v, want %v", got, tt.want)
 			}
 		})
