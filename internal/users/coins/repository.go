@@ -17,6 +17,10 @@ func NewRepository(db *gorm.DB) repository {
 	}
 }
 
+func (r repository) RunTransaction(ctx context.Context, fn func(tx *gorm.DB) error) error {
+	return r.db.WithContext(ctx).Transaction(fn)
+}
+
 func (r repository) GetUserCoins(ctx context.Context, userID int) (UserCoins, error) {
 	var userCoins UserCoins
 	err := r.db.WithContext(ctx).
@@ -31,8 +35,22 @@ func (r repository) GetUserCoins(ctx context.Context, userID int) (UserCoins, er
 
 }
 
-func (r repository) UpsertUserCoin(ctx context.Context, userCoin UserCoins) error {
-	return r.db.WithContext(ctx).
+func (r repository) GetUserCoinsTx(tx *gorm.DB, userID int) (UserCoins, error) {
+	var userCoins UserCoins
+	err := tx.
+		Model(UserCoins{}).
+		Where("user_id = ?", userID).
+		Scan(&userCoins).
+		Error
+	if err != nil {
+		return UserCoins{}, err
+	}
+	return userCoins, nil
+
+}
+
+func (r repository) UpsertUserCoinTx(tx *gorm.DB, userCoin UserCoins) error {
+	return tx.
 		Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "user_id"}},
 			DoUpdates: clause.AssignmentColumns([]string{"coins", "updated_at"}),
