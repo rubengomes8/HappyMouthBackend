@@ -6,6 +6,7 @@ import (
 	"github.com/rubengomes8/HappyMouthBackend/internal/auth"
 	"github.com/rubengomes8/HappyMouthBackend/internal/ingredients"
 	"github.com/rubengomes8/HappyMouthBackend/internal/recipes"
+	"github.com/rubengomes8/HappyMouthBackend/internal/users"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -70,6 +71,14 @@ func SetAPIRoutes(
 		v1Recipes.POST("", recipes.CreateRecipe)
 		v1Recipes.GET("", recipes.GetRecipes)
 		v1Recipes.PATCH("/:id/favorite", recipes.SetUserRecipeFavorite)
+	}
+
+	// USER COINS
+	v1Coins := r.Group("/v1/users")
+	{
+		v1Coins.Use(users.JWTAuthMiddleware())
+		v1Coins.GET("/coins", users.GetUserCoins)
+		// v1Coins.PATCH("/:user-id/coins/add", TODO()) // or PAY ?
 	}
 
 	return r

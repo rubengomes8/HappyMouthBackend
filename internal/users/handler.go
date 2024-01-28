@@ -1,4 +1,4 @@
-package ingredients
+package users
 
 import (
 	"context"
@@ -15,22 +15,22 @@ const (
 
 //go:generate go-mockgen -f ./ -i service -d ./mocks/
 type service interface {
-	GetIngredients(ctx context.Context, reqOptions ReqOptions) ([]Ingredient, error)
+	GetUserCoins(ctx context.Context, userID int) (UserCoins, error)
 }
 
-type IngredientsHandler struct {
+type Handler struct {
 	svc      service
 	tokenSvc corejwt.TokenService
 }
 
-func NewIngredientsHandler(svc service) IngredientsHandler {
-	return IngredientsHandler{
+func NewHandler(svc service) Handler {
+	return Handler{
 		svc:      svc,
 		tokenSvc: corejwt.NewTokenService(apiSecret, tokenLifespanHours),
 	}
 }
 
-func (h IngredientsHandler) JWTAuthMiddleware() gin.HandlerFunc {
+func (h Handler) JWTAuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		err := h.tokenSvc.ValidateToken(ctx)
 		if err != nil {
@@ -42,37 +42,39 @@ func (h IngredientsHandler) JWTAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-// GetIngredients is used to get the list of available ingredients
+type UserCoinsResponse struct {
+	UserID int64 `json:"user_id"`
+	Coins  int   `json:"coins"`
+}
+
+// GetCoins is used to get the user numebr of coins.
 // ShowEntity godoc
-// @tags ingredients
-// @Summary Gets a list of ingredients.
-// @Description Gets a list of ingredients.
-// @Param sort-by-name query bool false "Sort ingredients by name."
+// @tags users
+// @Summary Gets the number of user coins.
+// @Description Gets the number of user coins.
 // @Accept json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {object} []Ingredient
+// @Success 200 {object} []UserCoinsResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /v1/ingredients [get]
-func (h IngredientsHandler) GetIngredients(ctx *gin.Context) {
+// @Router /v1/users/coins [get]
+func (h Handler) GetUserCoins(ctx *gin.Context) {
 
-	sortByName, err := getBoolQueryParamWithDefault(ctx, "sort-by-name", false)
+	userID, err := h.tokenSvc.ExtractClaimSub(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
 	}
 
-	options := ReqOptions{
-		SortByName: sortByName,
-	}
-
-	ingredients, err := h.svc.GetIngredients(ctx, options)
+	userCoins, err := h.svc.GetUserCoins(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, ingredients)
+	ctx.JSON(http.StatusOK, UserCoinsResponse{
+		UserID: userCoins.UserID,
+		Coins:  userCoins.Coins,
+	})
 	ctx.Writer.Flush()
 }
