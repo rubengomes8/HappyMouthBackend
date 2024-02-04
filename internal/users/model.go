@@ -17,3 +17,7 @@ type UserFilters struct {
 	Username string `json:"username,omitempty"`
 	Email    string `json:"email,omitempty"`
 }
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}

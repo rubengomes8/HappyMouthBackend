@@ -42,7 +42,7 @@ func (h Handler) JWTAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-type UserCoinsResponse struct {
+type UserCoins struct {
 	UserID int64 `json:"user_id"`
 	Coins  int   `json:"coins"`
 }
@@ -55,7 +55,7 @@ type UserCoinsResponse struct {
 // @Accept json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {object} []UserCoinsResponse
+// @Success 200 {object} UserCoins
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /v1/users/coins [get]
@@ -72,7 +72,7 @@ func (h Handler) GetUserCoins(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, UserCoinsResponse{
+	ctx.JSON(http.StatusOK, UserCoins{
 		UserID: userCoins.UserID,
 		Coins:  userCoins.Coins,
 	})

@@ -48,20 +48,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_ingredients.Ingredient"
+                                "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_ingredients.Ingredient"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_ingredients.ErrorResponse"
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_ingredients.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_ingredients.ErrorResponse"
+                            "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_ingredients.ErrorResponse"
                         }
                     }
                 }
@@ -206,6 +206,46 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/v1/users/coins": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Gets the number of user coins.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Gets the number of user coins.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_users.UserCoins"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_users.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_users.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -291,6 +331,39 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "recipe_type": {
+                    "$ref": "#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.RecipeType"
+                }
+            }
+        },
+        "github.com_rubengomes8_HappyMouthBackend_internal_recipes.RecipeType": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github.com_rubengomes8_HappyMouthBackend_internal_users.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "github.com_rubengomes8_HappyMouthBackend_internal_users.UserCoins": {
+            "type": "object",
+            "properties": {
+                "coins": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -376,6 +449,39 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "recipe_type": {
+                    "$ref": "#/definitions/internal_recipes.RecipeType"
+                }
+            }
+        },
+        "internal_recipes.RecipeType": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_users.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_users.UserCoins": {
+            "type": "object",
+            "properties": {
+                "coins": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         }

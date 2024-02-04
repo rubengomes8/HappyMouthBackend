@@ -53,6 +53,27 @@ definitions:
         items:
           type: string
         type: array
+      recipe_type:
+        $ref: '#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_recipes.RecipeType'
+    type: object
+  github.com_rubengomes8_HappyMouthBackend_internal_recipes.RecipeType:
+    properties:
+      id:
+        type: integer
+      type:
+        type: integer
+    type: object
+  github.com_rubengomes8_HappyMouthBackend_internal_users.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  github.com_rubengomes8_HappyMouthBackend_internal_users.UserCoins:
+    properties:
+      coins:
+        type: integer
+      user_id:
+        type: integer
     type: object
   internal_ingredients.ErrorResponse:
     properties:
@@ -108,6 +129,27 @@ definitions:
         items:
           type: string
         type: array
+      recipe_type:
+        $ref: '#/definitions/internal_recipes.RecipeType'
+    type: object
+  internal_recipes.RecipeType:
+    properties:
+      id:
+        type: integer
+      type:
+        type: integer
+    type: object
+  internal_users.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  internal_users.UserCoins:
+    properties:
+      coins:
+        type: integer
+      user_id:
+        type: integer
     type: object
 info:
   contact: {}
@@ -129,16 +171,16 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/internal_ingredients.Ingredient'
+              $ref: '#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_ingredients.Ingredient'
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_ingredients.ErrorResponse'
+            $ref: '#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_ingredients.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_ingredients.ErrorResponse'
+            $ref: '#/definitions/github.com_rubengomes8_HappyMouthBackend_internal_ingredients.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Gets a list of ingredients.
@@ -232,4 +274,29 @@ paths:
       summary: Updates the favorite state of a user recipe.
       tags:
       - Recipes
+  /v1/users/coins:
+    get:
+      consumes:
+      - application/json
+      description: Gets the number of user coins.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_users.UserCoins'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_users.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_users.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Gets the number of user coins.
+      tags:
+      - users
 swagger: "2.0"
